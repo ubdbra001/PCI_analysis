@@ -27,10 +27,12 @@ merging_data <- function() {
 test_that("No merging when frame_gap equals 0", {
 
   test_data <- merging_data()
-
+  expected_output <- test_data
   frame_gap <- 0
-  expect_equal(merge_events(test_data, frame_gap),
-               test_data)
+
+  expect_equal(
+    merge_events(test_data, frame_gap),
+    expected_output)
 
 })
 
@@ -39,7 +41,6 @@ test_that("No merging when frame_gap equals 0", {
 test_that("Merging when frame_gap equals 3", {
 
   test_data <- merging_data()
-
   expected_output <- tibble(
     ordinal = c(1, 2, 4),
     first_frame = c(1, 12, 55),
@@ -47,8 +48,8 @@ test_that("Merging when frame_gap equals 3", {
     onset = c(450, 813, 3000),
     offset = c(582, 2067, 4000)
   )
-
   frame_gap <- 3
+
   expect_equal(
     merge_events(test_data, frame_gap),
     expected_output)
@@ -59,7 +60,6 @@ test_that("Merging when frame_gap equals 3", {
 test_that("Merging when frame_gap equals 5", {
 
   test_data <- merging_data()
-
   expected_output <- tibble(
     ordinal = c(1, 2),
     first_frame = c(1, 12),
@@ -67,8 +67,8 @@ test_that("Merging when frame_gap equals 5", {
     onset = c(450, 813),
     offset = c(582, 4000)
   )
-
   frame_gap <- 5
+
   expect_equal(
     merge_events(test_data, frame_gap),
     expected_output)
@@ -79,7 +79,6 @@ test_that("Merging when frame_gap equals 5", {
 test_that("Events not merged when lebels are different", {
   test_data <- merging_data()
   test_data <- add_column(test_data, label = c("a", "a", "b", "b"))
-
   expected_output <- test_data
   frame_gap <- 3
 
