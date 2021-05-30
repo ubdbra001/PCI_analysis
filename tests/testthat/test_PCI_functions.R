@@ -124,6 +124,23 @@ test_that("ms converted to seconds", {
 
 })
 
+# 2.2
+test_that("columns with frame in name removed", {
+
+  test_data <- tibble(
+    time = 73,
+    behav_name = "behav",
+    onset = 2718,
+    offset = 3141,
+    frame_n = 23,
+    a_column_with_frame_in_name = 35)
+
+  expected_output <- tibble(
+    behav_name = "behav",
+    onset = 2.718,
+    offset = 3.141,
+    duration = 0.432)
+
   expect_equal(
     format_events(test_data),
     expected_output)
