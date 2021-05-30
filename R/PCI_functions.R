@@ -13,7 +13,8 @@ merge_events <- function(events_df, frame_gap, behav_name) {
   # Loops backwards through data frame. Checks gap, if less than frame.gap then
   # update preceding row with current row end points and then delete current row
 
-  if (nrow(events_df) < 2) return(events_df)
+  # Early return if less than 2 events or frame_gap is 0
+  if (nrow(events_df) < 2 | frame_gap == 0) return(events_df)
 
   # Make sure df is not grouped before processing further
   if (is_grouped_df(events_df)) events_df <- ungroup(events_df)
