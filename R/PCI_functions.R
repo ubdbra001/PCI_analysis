@@ -70,3 +70,7 @@ format_events <- function(input_df){
 
   return(output_df)
 }
+
+extract_behav <- function(){
+
+}
