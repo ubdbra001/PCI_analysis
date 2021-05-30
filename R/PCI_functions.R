@@ -88,20 +88,33 @@ extract_behavs <- function(input_data, behav_name) {
 
 extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
 
+  # Extends timings of an event by a specified number of frames
+  #
+  # This is for events like offCamera where other behavioral events may lead
+  # into them but will not overlap
+  #
+  # Currently only works symmetrically
+  # May also be worht making a temporary shift to avoid inflating length of
+  # events in question
+
+  # Ealry return if frame_shift is less than 1 (no negative numbers)
   if (frame_shift < 1) return(input_data)
 
+  # Make sure frame_shift number is an integer
   frame_shift <- as.integer(frame_shift)
 
   data_len <- length(time_in)
 
   adjusted_data <- mutate(
     input_data,
+    # If frame is not first or last then adjust, otherwise leave as is
     first_frame = if_else(first_frame != 1,
                           first_frame - frame_shift,
                           first_frame),
     last_frame = if_else(last_frame != data_len,
                          last_frame + frame_shift,
                          last_frame),
+    # Now adjust onset and offset times accordingly
     onset = time_in[first_frame],
     offset = time_in[last_frame])
 
@@ -110,6 +123,9 @@ extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
 }
 
 extract_unique_objects <- function(input_df){
+
+  # Extracts all the unique objects from all columns beginning with "obj"
+  # Ignores anything not a word (spaces and punctuation)
 
   # Select only obj cols
   obj_cols <- select(input_df, matches("^obj"))
