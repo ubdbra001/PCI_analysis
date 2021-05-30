@@ -71,6 +71,18 @@ format_events <- function(input_df){
   return(output_df)
 }
 
-extract_behav <- function(){
+extract_behavs <- function(input_data, behav_name) {
+  # Extract columns containing behaviour of interest and prepare them
+  # for further analysis
 
+  pattern = paste0("^", behav_name)
+
+  # Drop any column that doesn't contain behav_name
+  output_data <- select(input_data, time, matches(pattern)) %>%
+    # Remove behav_name and eveything up to period from column names
+    # leaving just suffixes
+    rename_all(str_remove,  paste0(pattern, ".*\\."))
+
+  return(output_data)
 }
+
