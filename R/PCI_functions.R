@@ -109,6 +109,17 @@ extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
 
 }
 
-extract_unique_objects <- function(){
+extract_unique_objects <- function(input_df){
 
+  # Select only obj cols
+  obj_cols <- select(input_df, matches("^obj"))
+  # Collapse multiple cols into single col
+  long_obj_df <- pivot_longer(obj_cols, cols = contains("obj")) %>%
+    # Remove 'blank' cells
+    filter(str_detect(value, "[:word:]"))
+
+  # Pull out unique objects
+  unique_objs <- unique(long_obj_df$value)
+
+  return(unique_objs)
 }
