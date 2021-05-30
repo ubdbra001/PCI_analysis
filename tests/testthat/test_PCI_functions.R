@@ -107,6 +107,7 @@ test_that("Events merged when labels are the same", {
 test_that("ms converted to seconds", {
 
   test_data <- tibble(
+    time = 73,
     behav_name = "behav",
     onset = 2718,
     offset = 3141)
@@ -114,7 +115,14 @@ test_that("ms converted to seconds", {
   expected_output <- tibble(
     behav_name = "behav",
     onset = 2.718,
-    offset = 3.141)
+    offset = 3.141,
+    duration = 0.432)
+
+  expect_equal(
+    format_events(test_data),
+    expected_output)
+
+})
 
   expect_equal(
     format_events(test_data),
