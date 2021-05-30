@@ -104,7 +104,7 @@ test_that("Events merged when labels are the same", {
 # 2 Test format_event function ----
 
 # 2.1
-test_that("ms converted to seconds", {
+test_that("ms converted to seconds and duration added", {
 
   test_data <- tibble(
     time = 73,
