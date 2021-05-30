@@ -101,7 +101,7 @@ test_that("Events merged when labels are the same", {
     expected_output)
 })
 
-# 2 Test format_event function ----
+# 2 Test format_events function ----
 
 # 2.1
 test_that("Times converted from ms to seconds and duration added", {
@@ -167,4 +167,48 @@ test_that("Column y removed", {
   expect_equal(
     format_events(test_data),
     expected_output)
+})
+
+# 3 Test extract_behavs function ----
+
+# 3.1
+test_that("Specific behaviour is extracted correctly from data", {
+
+  behav_name <- 'behav'
+  test_data <- tibble(
+    time = NA_integer_,
+    behav.var1 = 1,
+    behav.var2 = 2,
+    bar.var1 = 3,
+    bar.var2 = 4)
+  expected_output <- tibble(
+    time = NA_integer_,
+    var1 = 1,
+    var2 = 2)
+
+  expect_equal(
+    extract_behavs(test_data, behav_name),
+    expected_output)
+
+})
+
+# 3.1
+test_that("Partial matching for behaviour", {
+
+  behav_name <- 'behav'
+  test_data <- tibble(
+    time = NA_integer_,
+    behaviour.var1 = 1,
+    behaviour.var2 = 2,
+    bar.var1 = 3,
+    bar.var2 = 4)
+  expected_output <- tibble(
+    time = NA_integer_,
+    var1 = 1,
+    var2 = 2)
+
+  expect_equal(
+    extract_behavs(test_data, behav_name),
+    expected_output)
+
 })
