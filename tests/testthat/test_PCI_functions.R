@@ -212,3 +212,69 @@ test_that("Partial matching for behaviour", {
     expected_output)
 
 })
+
+# 4 Test extend_event_by_frame functions ----
+
+# 4.1
+
+test_that("Times adjusted by default: one frame", {
+
+  times <- seq(from = 450, by = 25, length.out = 50)
+  test_data <- tibble(
+    first_frame = c(1, 12, 34),
+    last_frame = c(6, 27, 50),
+    onset = c(450, 725, 1275),
+    offset = c(575, 1100, 1675))
+
+  expected_output <- tibble(
+    first_frame = c(1, 11, 33),
+    last_frame = c(7, 28, 50),
+    onset = c(450, 700, 1250),
+    offset = c(600, 1125, 1675))
+
+  expect_equal(
+    extend_event_by_frame(test_data, time_in = times),
+    expected_output)
+
+})
+
+
+# 4.2
+test_that("Times adjusted to three frames preceding/following event", {
+
+  times <- seq(from = 450, by = 25, length.out = 50)
+  test_data <- tibble(
+    first_frame = c(1, 12, 34),
+    last_frame = c(6, 27, 50),
+    onset = c(450, 725, 1275),
+    offset = c(575, 1100, 1675))
+
+  expected_output <- tibble(
+    first_frame = c(1, 9, 31),
+    last_frame = c(9, 30, 50),
+    onset = c(450, 650, 1200),
+    offset = c(650, 1175, 1675))
+
+  expect_equal(
+    extend_event_by_frame(test_data, time_in = times, frame_shift = 3),
+    expected_output)
+
+})
+
+# 4.3
+test_that("Times not adjusted", {
+
+  times <- seq(from = 450, by = 25, length.out = 50)
+  test_data <- tibble(
+    first_frame = c(1, 12, 34),
+    last_frame = c(6, 27, 50),
+    onset = c(450, 725, 1275),
+    offset = c(575, 1100, 1675))
+
+  expected_output <- test_data
+
+  expect_equal(
+    extend_event_by_frame(test_data, time_in = times, frame_shift = 0),
+    expected_output)
+
+})
