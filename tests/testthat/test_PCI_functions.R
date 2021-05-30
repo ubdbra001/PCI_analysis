@@ -53,3 +53,23 @@ test_that("Merging when frame_gap equals 3", {
     merge_events(test_data, frame_gap),
     expected_output)
 })
+
+# 1.3 Generous merging (frame_gap = 5) ----
+
+test_that("Merging when frame_gap equals 5", {
+
+  test_data <- merging_data()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    first_frame = c(1, 12),
+    last_frame = c(5, 75),
+    onset = c(450, 813),
+    offset = c(582, 4000)
+  )
+
+  frame_gap <- 5
+  expect_equal(
+    merge_events(test_data, frame_gap),
+    expected_output)
+})
