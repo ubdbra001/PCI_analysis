@@ -26,7 +26,7 @@ merging_data <- function() {
 
 test_that("No merging when frame_gap equals 0", {
 
-  test_data <- gen_merging_data()
+  test_data <- merging_data()
 
   frame_gap <- 0
   expect_equal(merge_events(test_data, frame_gap),
