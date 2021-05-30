@@ -86,6 +86,25 @@ extract_behavs <- function(input_data, behav_name) {
   return(output_data)
 }
 
-extend_event_frames <- function(){
+extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
+
+  if (frame_shift < 1) return(input_data)
+
+  frame_shift <- as.integer(frame_shift)
+
+  data_len <- length(time_in)
+
+  adjusted_data <- mutate(
+    input_data,
+    first_frame = if_else(first_frame != 1,
+                          first_frame - frame_shift,
+                          first_frame),
+    last_frame = if_else(last_frame != data_len,
+                         last_frame + frame_shift,
+                         last_frame),
+    onset = time_in[first_frame],
+    offset = time_in[last_frame])
+
+  return(adjusted_data)
 
 }
