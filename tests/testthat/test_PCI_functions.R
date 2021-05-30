@@ -104,7 +104,7 @@ test_that("Events merged when labels are the same", {
 # 2 Test format_event function ----
 
 # 2.1
-test_that("ms converted to seconds and duration added", {
+test_that("Times converted from ms to seconds and duration added", {
 
   test_data <- tibble(
     time = 73,
@@ -116,7 +116,7 @@ test_that("ms converted to seconds and duration added", {
     behav_name = "behav",
     onset = 2.718,
     offset = 3.141,
-    duration = 0.432)
+    duration = 0.423)
 
   expect_equal(
     format_events(test_data),
@@ -125,7 +125,7 @@ test_that("ms converted to seconds and duration added", {
 })
 
 # 2.2
-test_that("columns with frame in name removed", {
+test_that("Columns with 'frame' in name removed", {
 
   test_data <- tibble(
     time = 73,
@@ -139,7 +139,7 @@ test_that("columns with frame in name removed", {
     behav_name = "behav",
     onset = 2.718,
     offset = 3.141,
-    duration = 0.432)
+    duration = 0.423)
 
   expect_equal(
     format_events(test_data),
