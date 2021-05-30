@@ -18,15 +18,32 @@ merge_events <- function(events_df, frame_gap, behav_name) {
   # Make sure df is not grouped before processing further
   if (is_grouped_df(events_df)) events_df <- ungroup(events_df)
 
+  label_col_exists <- "label" %in% names(events_df)
+
+  # Run through events backwards
   for (row_n in seq(from = nrow(events_df), to = 2)) {
 
+    # Get current row and one before
     current_row <- events_df[row_n, ]
     preceding_row <- events_df[row_n - 1, ]
 
     vals_to_update <- tibble()
 
-    if ((current_row$first_frame - preceding_row$last_frame) <= frame_gap) {
+    # If the label column exists in the data frame
+    if (label_col_exists) {
+      # See if the labels for the two events match
+      same_label <- current_row$label == preceding_row$label
+    } else {
+      # If it doesn't then just set as true
+      same_label <- TRUE
+    }
 
+    # See if the two events are within range of one another
+    if ((current_row$first_frame - preceding_row$last_frame) <= frame_gap &
+        same_label) {
+
+      # If the above conditions are met then merge the events by extending the
+      # preceding event
       vals_to_update <- tibble(select(preceding_row, ordinal),
                                select(current_row, offset, last_frame))
 
