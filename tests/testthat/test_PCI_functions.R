@@ -278,3 +278,21 @@ test_that("Times not adjusted", {
     expected_output)
 
 })
+
+# 4.4
+test_that("Negative values treated as 0", {
+
+  times <- seq(from = 450, by = 25, length.out = 50)
+  test_data <- tibble(
+    first_frame = c(1, 12, 34),
+    last_frame = c(6, 27, 50),
+    onset = c(450, 725, 1275),
+    offset = c(575, 1100, 1675))
+
+  expected_output <- test_data
+
+  expect_equal(
+    extend_event_by_frame(test_data, time_in = times, frame_shift = -5),
+    expected_output)
+
+})
