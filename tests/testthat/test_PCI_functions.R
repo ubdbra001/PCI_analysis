@@ -146,3 +146,25 @@ test_that("Columns with 'frame' in name removed", {
     expected_output)
 
 })
+
+# 2.3
+test_that("Column y removed", {
+
+  test_data <- tibble(
+    time = c(73, 85),
+    behav_name = "behav",
+    onset = c(2718, 5000),
+    offset = c(3141, 7000),
+    frame_n = c(23, 632),
+    y = "y")
+
+  expected_output <- tibble(
+    behav_name = "behav",
+    onset = c(2.718, 5.000),
+    offset = c(3.141, 7.000),
+    duration = c(0.423, 2.000))
+
+  expect_equal(
+    format_events(test_data),
+    expected_output)
+})
