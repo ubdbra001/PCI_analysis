@@ -100,3 +100,24 @@ test_that("Events merged when labels are the same", {
     merge_events(test_data, frame_gap),
     expected_output)
 })
+
+# 2 Test format_event function ----
+
+# 2.1
+test_that("ms converted to seconds", {
+
+  test_data <- tibble(
+    behav_name = "behav",
+    onset = 2718,
+    offset = 3141)
+
+  expected_output <- tibble(
+    behav_name = "behav",
+    onset = 2.718,
+    offset = 3.141)
+
+  expect_equal(
+    format_events(test_data),
+    expected_output)
+
+})
