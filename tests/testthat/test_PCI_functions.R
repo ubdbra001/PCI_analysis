@@ -76,10 +76,29 @@ test_that("Merging when frame_gap equals 5", {
 
 # 1.4 Do not merge when labels are different ----
 
-test_that("Events not merged when lebels are different", {
+test_that("Events not merged when labels are different", {
   test_data <- merging_data()
   test_data <- add_column(test_data, label = c("a", "a", "b", "b"))
   expected_output <- test_data
+  frame_gap <- 3
+
+  expect_equal(
+    merge_events(test_data, frame_gap),
+    expected_output)
+})
+
+# 1.5 Merge when labels are the same
+
+test_that("Events merged when labels are the same", {
+  test_data <- merging_data()
+  test_data <- add_column(test_data, label = c("a", "a", "a", "a"))
+  expected_output <- tibble(
+    ordinal = c(1, 2, 4),
+    first_frame = c(1, 12, 55),
+    last_frame = c(5, 50, 75),
+    onset = c(450, 813, 3000),
+    offset = c(582, 2067, 4000),
+    label = "a")
   frame_gap <- 3
 
   expect_equal(
