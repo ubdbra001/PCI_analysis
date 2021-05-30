@@ -6,7 +6,7 @@ library(tidyverse)
 source("../../R/PCI_functions.R")
 
 
-# 1 Test event merging function ----
+# 1 Test merge_events function ----
 
 # Mock function to generate data to test:
 
@@ -22,8 +22,7 @@ merging_data <- function() {
   return(test_data)
 }
 
-# 1.1 No merging (frame_gap = 0) ----
-
+# 1.1
 test_that("No merging when frame_gap equals 0", {
 
   test_data <- merging_data()
@@ -36,8 +35,7 @@ test_that("No merging when frame_gap equals 0", {
 
 })
 
-# 1.2 Default merging (frame_gap = 3) ----
-
+# 1.2
 test_that("Merging when frame_gap equals 3", {
 
   test_data <- merging_data()
@@ -55,8 +53,7 @@ test_that("Merging when frame_gap equals 3", {
     expected_output)
 })
 
-# 1.3 Generous merging (frame_gap = 5) ----
-
+# 1.3
 test_that("Merging when frame_gap equals 5", {
 
   test_data <- merging_data()
@@ -74,8 +71,7 @@ test_that("Merging when frame_gap equals 5", {
     expected_output)
 })
 
-# 1.4 Do not merge when labels are different ----
-
+# 1.4
 test_that("Events not merged when labels are different", {
   test_data <- merging_data()
   test_data <- add_column(test_data, label = c("a", "a", "b", "b"))
@@ -87,8 +83,7 @@ test_that("Events not merged when labels are different", {
     expected_output)
 })
 
-# 1.5 Merge when labels are the same
-
+# 1.5
 test_that("Events merged when labels are the same", {
   test_data <- merging_data()
   test_data <- add_column(test_data, label = c("a", "a", "a", "a"))
