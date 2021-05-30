@@ -6,7 +6,7 @@ library(tidyverse)
 source("../../R/PCI_functions.R")
 
 
-# Test event merging function ----
+# 1 Test event merging function ----
 
 # Mock function to generate data to test:
 
@@ -22,7 +22,7 @@ merging_data <- function() {
   return(test_data)
 }
 
-# No merging (frame_gap = 0) ----
+# 1.1 No merging (frame_gap = 0) ----
 
 test_that("No merging when frame_gap equals 0", {
 
@@ -32,4 +32,24 @@ test_that("No merging when frame_gap equals 0", {
   expect_equal(merge_events(test_data, frame_gap),
                test_data)
 
+})
+
+# 1.2 Default merging (frame_gap = 3) ----
+
+test_that("Merging when frame_gap equals 3", {
+
+  test_data <- merging_data()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2, 4),
+    first_frame = c(1, 12, 55),
+    last_frame = c(5, 50, 75),
+    onset = c(450, 813, 3000),
+    offset = c(582, 2067, 4000)
+  )
+
+  frame_gap <- 3
+  expect_equal(
+    merge_events(test_data, frame_gap),
+    expected_output)
 })
