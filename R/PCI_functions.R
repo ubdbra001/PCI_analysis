@@ -30,8 +30,8 @@ merge_events <- function(events_df, frame_gap, behav_name) {
       vals_to_update <- tibble(select(preceding_row, ordinal),
                                select(current_row, offset, last_frame))
 
-      events_df <- rows_update(events_df, vals_to_update, by = ordinal) %>%
-        rows_delete(current_row["ordinal"])
+      events_df <- rows_update(events_df, vals_to_update, by = "ordinal") %>%
+        rows_delete(current_row["ordinal"], by = "ordinal")
     }
   }
   return(events_df)
