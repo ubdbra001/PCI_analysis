@@ -54,3 +54,19 @@ merge_events <- function(events_df, frame_gap, behav_name) {
   }
   return(events_df)
 }
+
+format_events <- function(input_df){
+
+  # May remove the ungroup function if it is done earlier in the process
+  input_df <- ungroup(input_df) %>%
+    # Convert onset and offset times to ms and calculate duration
+    mutate(onset = round(onset / 1000, 3),
+           offset = round(offset / 1000, 3),
+           duration = offset - onset)
+
+  # Remove time column, any columns containing "frame" and the "y" column if
+  # it exists
+  output_df <- select(input_df, -time, -contains("frame"), -matches("^y$"))
+
+  return(output_df)
+}
