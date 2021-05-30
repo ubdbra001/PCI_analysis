@@ -86,3 +86,6 @@ extract_behavs <- function(input_data, behav_name) {
   return(output_data)
 }
 
+extend_event_frames <- function(){
+
+}
