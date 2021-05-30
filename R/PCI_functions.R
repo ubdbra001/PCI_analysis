@@ -108,3 +108,7 @@ extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
   return(adjusted_data)
 
 }
+
+extract_unique_objects <- function(){
+
+}
