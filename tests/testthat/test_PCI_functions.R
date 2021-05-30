@@ -296,3 +296,24 @@ test_that("Negative values treated as 0", {
     expected_output)
 
 })
+
+
+# 5 Test extract_unique_objects function ----
+
+test_that("Unique objects extracted", {
+
+  test_data <- tibble(
+    obj1 = c("teapot", ".", "."),
+    obj2 = c("book", "book", "glass"),
+    obj3 = c("shirt", "!", "glasses"),
+    obj34 = c(" ", "pillow", "?")
+  )
+
+  expected_output <- c(
+    "teapot", "book","shirt", "glasses", "pillow","glass")
+
+  expect_equal(
+    sort( extract_unique_objects(test_data) ),
+    sort( expected_output) )
+
+})
