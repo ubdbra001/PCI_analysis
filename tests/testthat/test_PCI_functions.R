@@ -640,13 +640,15 @@ test_that("Six object events successfully extracted across three cols ", {
 
 # 8 Test parse_behav_events function ----
 
+data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddccccdddcdddcdddcdddcdddcdddcdddcccccdddcccccdddcccccdddc"
+
 # 8.1
 test_that("Single event successfully extracted", {
 
   behav_name <- 'PCIduration'
 
   file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path)
+  test_data <- read_csv(file_path, col_types = data_col_def)
 
   expected_output <- tibble(
     ordinal = 1,
@@ -669,7 +671,7 @@ test_that("Parse behavioural events - two events", {
   behav_name <- 'offCamera'
 
   file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path)
+  test_data <- read_csv(file_path, col_types = data_col_def)
 
   expected_output <- tibble(
     ordinal = c(1, 2),
@@ -688,6 +690,25 @@ test_that("Parse behavioural events - two events", {
 
 # 8.3
 test_that("Parse behavioural events - no events", {
+
+  behav_name <- 'notes'
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path, col_types = data_col_def)
+
+  expected_output <- tibble(
+    ordinal = as.double(NA),
+    behav_name = behav_name,
+    onset = as.double(NA),
+    offset = as.double(NA),
+    general = as.character(NA),
+    duration = as.double(NA))
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = T),
+    expected_output)
 
 })
 
