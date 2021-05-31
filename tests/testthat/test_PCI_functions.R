@@ -649,15 +649,16 @@ test_that("Single event successfully extracted", {
   test_data <- read_csv(file_path)
 
   expected_output <- tibble(
+    ordinal = 1,
     behav_name = behav_name,
     onset = 0.020,
     offset = 4.000,
-    duration = 3.880)
+    duration = 3.980)
 
   expect_equal(
-    parse_behav(behav_name,
-                raw_data = test_data,
-                remove_ambiguous = T),
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = T),
     expected_output)
 
 })
