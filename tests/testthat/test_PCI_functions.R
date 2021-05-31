@@ -713,12 +713,52 @@ test_that("behav with no events returns data frame with just name and NAs", {
 })
 
 # 8.4
-test_that("Parse behavioural events - not actual times", {
+test_that("Ambiguous events removed when flag is set to true", {
 
+  behav_name <- 'parentATbaby'
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path, col_types = data_col_def)
+
+  expected_output <- tibble(
+    ordinal = 2,
+    behav_name = behav_name,
+    onset = 2.140,
+    offset = 2.300,
+    duration = 0.160)
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = T),
+    expected_output)
 })
 
 # 8.5
 test_that("Parse behavioural events - don't remove ambiguous", {
+
+})
+
+# 8.6
+test_that("Proximal ambiguous and non-ambiguous events merged", {
+
+  behav_name <- 'babyATparent'
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path, col_types = data_col_def)
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = behav_name,
+    onset = 0.080,
+    offset = 0.620,
+    duration = 0.540)
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F),
+    expected_output)
 
 })
 
