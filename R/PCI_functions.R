@@ -66,7 +66,8 @@ format_events <- function(input_df){
 
   # Remove time column, any columns containing "frame" and the "y" column if
   # it exists
-  output_df <- select(input_df, -time, -contains("frame"), -matches("^y$"))
+  output_df <- select(input_df, -time, -contains("frame"), -matches("^y$")) %>%
+    relocate(behav_name, .before = onset)
 
   return(output_df)
 }
