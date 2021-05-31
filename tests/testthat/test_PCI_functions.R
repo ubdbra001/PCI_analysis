@@ -519,3 +519,34 @@ test_that("Non-proximal events extracted but remain unmerged", {
   )
 
 })
+
+# 7 Test convert_events_to_objs function ----
+
+# 7.1
+test_that("Two object events successfully extracted", {
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", ".", "spoon"),
+    obj2 = c("teacup", "spoon", "."))
+
+  expected_output <- tibble(
+    ordinal = c(1, 1),
+    behav_name = "behav",
+    onset = c(2.000, 2.000),
+    offest = c(9.365, 3.500),
+    first_frame = c(25, 25),
+    last_frame = c(75, 33),
+    obj = c("spoon", "teacup")
+  )
+
+  expect_equal(
+    convert_events_to_objs(test_data),
+    expected_output
+  )
+
+})
