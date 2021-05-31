@@ -369,6 +369,91 @@ test_that("ignores other objects", {
 })
 
 # 6.3
-test_that("Proximal events with same object merged", {
+test_that("Proximal obj events with same object merged", {
 
+  test_data <- tibble(
+    ordinal = c(1, 2),
+    behav_name = "behav",
+    onset = c(2.000, 4.200),
+    offset = c(3.500, 7.500),
+    first_frame = c(25, 35),
+    last_frame = c(33, 56),
+    obj1 = "spoon",
+    obj2 = ".")
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 7.500,
+    first_frame = 25,
+    last_frame = 56,
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+
+})
+
+# 6.4
+test_that("Proximal events with different objects unaffected", {
+  test_data <- tibble(
+    ordinal = c(1, 2),
+    behav_name = "behav",
+    onset = c(2.000, 4.200),
+    offset = c(3.500, 7.500),
+    first_frame = c(25, 35),
+    last_frame = c(33, 56),
+    obj1 = c("spoon", "teacup"),
+    obj2 = ".")
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 3.500,
+    first_frame = 25,
+    last_frame = 33,
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+
+})
+
+# 6.5
+test_that("Proximal obj events with objs across diff columns merged", {
+  test_data <- tibble(
+    ordinal = c(1, 2),
+    behav_name = "behav",
+    onset = c(2.000, 4.200),
+    offset = c(3.500, 7.500),
+    first_frame = c(25, 35),
+    last_frame = c(33, 56),
+    obj1 = c("spoon", "."),
+    obj2 = c("teacup", "spoon"))
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 7.500,
+    first_frame = 25,
+    last_frame = 56,
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
 })
