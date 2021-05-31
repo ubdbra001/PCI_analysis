@@ -179,6 +179,73 @@ convert_events_to_objs <- function(input_df){
 
 }
 
-parse_behav_events <- function(){
+parse_behav_events <- function(behav_name, raw_data,
+                               remove_ambig = F, frame_gap = 2){
+
+  # Takes raw data and parses selected behavioral events from it
+  # Includes 'Remove Ambiguous' flag:
+  #   Whether to keep or remove looks coded as ambiguous
+
+  # Extract behav_name columns from data
+  raw_behav <- extract_behavs(raw_data, behav_name)
+
+  behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
+                         frame_n = row_number(),
+                         behav_name = behav_name) %>%
+    na.omit() # Remove NAs = include all events, certain and ambiguous
+
+  if (nrow(behav_events) == 0) {
+    # If there are no events: set all values as NAs, format as usual and
+    # return early.
+    behav_events <- add_row(behav_events, behav_name = behav_name) %>%
+      format_events()
+
+    return(behav_events)
+
+  } else {
+    # Group and summarise data into individual events
+    # summarise not used as non-named columns are dropped
+
+    grouped_events <- group_by(behav_events, ordinal)
+
+    grouped_events <- mutate(grouped_events,
+                             first_frame = min(frame_n),
+                             last_frame = max(frame_n)) %>%
+      filter(frame_n == first_frame)
+
+    behav_events <- ungroup(grouped_events)
+  }
+
+  # Optional event proccessing
+  # Remove abiguous events
+  if (remove_ambig & "a" %in% colnames(behav_events)) {
+    behav_events <- filter(behav_events, a != "a")
+  }
+
+  # Extend offcameras and book reading (and possibly other) events to ensure
+  # overlap with events that end/start adjacent
+  if (str_detect(behav_name, "offCameras|bookreading")) {
+    behav_events <- extend_event_by_frame(behav_events,
+                                          time_in = raw_data$time)
+  }
+
+  # Extract object events from *obj variables
+  if (str_detect(behav_name, "(parent|baby)obj")) {
+    behav_events <- convert_events_to_objs(behav_events)
+  }
+
+  # Merge proximal events
+  if (str_detect(behav_name, "(parent|baby)AT")){
+    # Should only be for looking events, not actions, with consistent labels
+    #
+    # Could modify convert_events_to_objs so merging done here, but would need
+    # to account for different variable names (label/obj) in merge_events
+    behav_events <- merge_events(behav_events, frame_gap = frame_gap)
+  }
+
+  # Format events (convert ms to s, add duration, drop unneeded columns)
+  behav_events <- format_events(behav_events)
+
+  return(behav_events)
 
 }
