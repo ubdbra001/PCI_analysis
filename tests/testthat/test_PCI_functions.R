@@ -741,6 +741,23 @@ test_that("Ambiguous events removed when flag is set to true", {
 # 8.5
 test_that("Parse behavioural events - don't remove ambiguous", {
 
+  behav_name <- 'parentATbaby'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    behav_name = behav_name,
+    onset = c(1.380, 2.140),
+    offset = c(1.600, 2.300),
+    duration = c(0.220, 0.160))
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F),
+    expected_output)
+
 })
 
 # 8.6
