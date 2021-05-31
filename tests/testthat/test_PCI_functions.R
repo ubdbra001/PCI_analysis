@@ -1,4 +1,4 @@
-#Imports and sourcing functions to test ----
+# Imports and sourcing functions to test ----
 
 library(testthat)
 library(tidyverse)
@@ -216,7 +216,6 @@ test_that("Partial matching for behaviour", {
 # 4 Test extend_event_by_frame functions ----
 
 # 4.1
-
 test_that("Times adjusted by default: one frame", {
 
   times <- seq(from = 450, by = 25, length.out = 50)
@@ -237,7 +236,6 @@ test_that("Times adjusted by default: one frame", {
     expected_output)
 
 })
-
 
 # 4.2
 test_that("Times adjusted to three frames preceding/following event", {
@@ -300,6 +298,7 @@ test_that("Negative values treated as 0", {
 
 # 5 Test extract_unique_objects function ----
 
+# 5.1
 test_that("Unique objects extracted", {
 
   test_data <- tibble(
@@ -315,5 +314,56 @@ test_that("Unique objects extracted", {
   expect_equal(
     sort( extract_unique_objects(test_data) ),
     sort( expected_output) )
+
+})
+
+# 6 Test extract_objs_from_events function ----
+
+# 6.1
+test_that("Object correctly extracted from single event", {
+
+  test_data <- tibble(
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 3.500,
+    obj1 = "spoon",
+    obj2 = ".")
+
+  expected_output <- tibble(
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 3.500,
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+
+})
+
+# 6.2
+test_that("ignores other objects", {
+  test_data <- tibble(
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 3.500,
+    obj1 = "spoon",
+    obj2 = ".")
+
+  expected_output <- tibble()
+
+  target_obj <- "teacup"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+})
+
+# 6.3
+test_that("Proximal events with same object merged", {
 
 })
