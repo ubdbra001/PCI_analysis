@@ -159,9 +159,19 @@ extract_obj_events <- function(object_label, input_df, frame_gap = 2){
 
 }
 
-convert_events_to_objs <- function(){
+convert_events_to_objs <- function(input_df){
 
   # Takes a data frame of events tagged with objects and convertis it to a data
   # frame of object events, ie events for each opject manipulated
+
+  # Get a list of unique objects for that participant
+  unique_objects <- extract_unique_objects(input_df)
+
+  # Run through list extracting event details for each object
+  output_df <- map_df(unique_objects,
+                      input_df,
+                      .f = extract_obj_events)
+
+  return(output_df)
 
 }
