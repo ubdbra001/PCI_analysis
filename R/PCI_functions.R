@@ -158,3 +158,10 @@ extract_obj_events <- function(object_label, input_df, frame_gap = 2){
   return(object_df)
 
 }
+
+convert_events_to_objs <- function(){
+
+  # Takes a data frame of events tagged with objects and convertis it to a data
+  # frame of object events, ie events for each opject manipulated
+
+}
