@@ -783,13 +783,21 @@ test_that("Proximal ambiguous and non-ambiguous events merged", {
 })
 
 # 8.6
-test_that("Parse behavioural events - Frame Gap is 0", {
+test_that("Proximal events not merged when frame_gap is set to 0", {
 
 })
 
 # 8.7
-test_that("Parse behavioural events - Frame Gap is 4", {
+test_that("Proximal events merged when frame_gap is set to 10", {
 
 })
+
+# 8.8
+test_that("Proximal events with different labels not merged", {})
+
+# 8.9
+test_that("Object events extracted from data correctly", {})
+
+
 
 # 9 Test select_behavs function ----
