@@ -642,7 +642,7 @@ test_that("Six object events successfully extracted across three cols ", {
 
 load_mock_PCIdata <- function(){
 
-  data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddccccdddcdddcdddcdddcdddcdddcdddcccccdddcccccdddcccccdddc"
+  data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddcccccdddcdddcdddcdddcdddcdddcdddcccccdddccccdddccccdddc"
 
   file_path <- test_path("mock_input", "mock_data.csv")
   test_data <- read_csv(file_path, col_types = data_col_def)
