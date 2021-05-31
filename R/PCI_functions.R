@@ -140,9 +140,21 @@ extract_unique_objects <- function(input_df){
   return(unique_objs)
 }
 
-extract_obj_events <- function(){
+extract_obj_events <- function(object_label, input_df, frame_gap = 2){
 
   # Extracts onset and offset for manipulation of specific objects from PCI
   # events
+
+  # Filter df so only events with that object are inlcuded
+  object_df <- filter(input_df, if_any(starts_with("obj"), ~ . == object_label))
+
+  # Merge proximal events (1-2 frames, ignore label differences)
+  object_df <- merge_events(events = object_df, frame_gap = frame_gap)
+
+  # Add object as single variable
+  object_df <- select(object_df, -starts_with("obj")) %>%
+    mutate(obj = object_label)
+
+  return(object_df)
 
 }
