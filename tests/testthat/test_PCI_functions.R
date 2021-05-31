@@ -666,7 +666,7 @@ test_that("Single event successfully extracted", {
 })
 
 # 8.2
-test_that("Parse behavioural events - two events", {
+test_that("Two events successfully extracted", {
 
   behav_name <- 'offCamera'
 
@@ -689,7 +689,7 @@ test_that("Parse behavioural events - two events", {
 })
 
 # 8.3
-test_that("Parse behavioural events - no events", {
+test_that("behav with no events returns data frame with just name and NAs", {
 
   behav_name <- 'notes'
 
