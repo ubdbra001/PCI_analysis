@@ -640,15 +640,22 @@ test_that("Six object events successfully extracted across three cols ", {
 
 # 8 Test parse_behav_events function ----
 
-data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddccccdddcdddcdddcdddcdddcdddcdddcccccdddcccccdddcccccdddc"
+load_mock_PCIdata <- function(){
+
+  data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddccccdddcdddcdddcdddcdddcdddcdddcccccdddcccccdddcccccdddc"
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path, col_types = data_col_def)
+
+  return(test_data)
+}
 
 # 8.1
 test_that("Single event successfully extracted", {
 
   behav_name <- 'PCIduration'
 
-  file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
+  test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = 1,
@@ -670,8 +677,7 @@ test_that("Two events successfully extracted", {
 
   behav_name <- 'offCamera'
 
-  file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
+  test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = c(1, 2),
@@ -693,8 +699,7 @@ test_that("behav with no events returns data frame with just name and NAs", {
 
   behav_name <- 'notes'
 
-  file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
+  test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = as.double(NA),
@@ -717,8 +722,7 @@ test_that("Ambiguous events removed when flag is set to true", {
 
   behav_name <- 'parentATbaby'
 
-  file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
+  test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = 2,
@@ -744,8 +748,7 @@ test_that("Proximal ambiguous and non-ambiguous events merged", {
 
   behav_name <- 'babyATparent'
 
-  file_path <- test_path("mock_input", "mock_data.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
+  test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = 1,
