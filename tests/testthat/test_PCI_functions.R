@@ -580,7 +580,7 @@ test_that("Two object events successfully extracted", {
 })
 
 # 7.3
-test_that("Three object events successfully extracted across two cols ", {
+test_that("Three object events successfully extracted across two cols", {
   test_data <- tibble(
     ordinal = c(1, 2, 3),
     behav_name = "behav",
@@ -608,7 +608,7 @@ test_that("Three object events successfully extracted across two cols ", {
 
 })
 
-# 7.3
+# 7.4
 test_that("Six object events successfully extracted across three cols ", {
   test_data <- tibble(
     ordinal = c(1, 2, 3),
@@ -637,3 +637,59 @@ test_that("Six object events successfully extracted across three cols ", {
   )
 
 })
+
+# 8 Test parse_behav_events function ----
+
+# 8.1
+test_that("Single event successfully extracted", {
+
+  behav_name <- 'PCIduration'
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path)
+
+  expected_output <- tibble(
+    behav_name = behav_name,
+    onset = 0.020,
+    offset = 4.000,
+    duration = 3.880)
+
+  expect_equal(
+    parse_behav(behav_name,
+                raw_data = test_data,
+                remove_ambiguous = T),
+    expected_output)
+
+})
+
+# 8.2
+test_that("Parse behavioural events - two events", {
+
+})
+
+# 8.3
+test_that("Parse behavioural events - no events", {
+
+})
+
+# 8.4
+test_that("Parse behavioural events - not actual times", {
+
+})
+
+# 8.5
+test_that("Parse behavioural events - don't remove ambiguous", {
+
+})
+
+# 8.6
+test_that("Parse behavioural events - Frame Gap is 0", {
+
+})
+
+# 8.7
+test_that("Parse behavioural events - Frame Gap is 4", {
+
+})
+
+# 9 Test select_behavs function ----
