@@ -139,3 +139,10 @@ extract_unique_objects <- function(input_df){
 
   return(unique_objs)
 }
+
+extract_obj_events <- function(){
+
+  # Extracts onset and offset for manipulation of specific objects from PCI
+  # events
+
+}
