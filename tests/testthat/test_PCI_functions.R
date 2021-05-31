@@ -666,6 +666,24 @@ test_that("Single event successfully extracted", {
 # 8.2
 test_that("Parse behavioural events - two events", {
 
+  behav_name <- 'offCamera'
+
+  file_path <- test_path("mock_input", "mock_data.csv")
+  test_data <- read_csv(file_path)
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    behav_name = behav_name,
+    onset = c(0.180, 2.760),
+    offset = c(0.400, 2.900),
+    duration = c(0.220, 0.140))
+
+  expect_equal(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = T),
+    expected_output)
+
 })
 
 # 8.3
