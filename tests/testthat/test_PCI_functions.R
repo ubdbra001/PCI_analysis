@@ -457,3 +457,65 @@ test_that("Proximal obj events with objs across diff columns merged", {
     expected_output
   )
 })
+
+# 6.6
+test_that("More that 2 proximal events across different columns merged", {
+
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", ".", "spoon"),
+    obj2 = c("teacup", "spoon", "."))
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 9.365,
+    first_frame = 25,
+    last_frame = 75,
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+
+})
+
+# 6.7
+test_that("Non-proximal events extracted but remain unmerged", {
+
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", ".", "spoon"),
+    obj2 = c("teacup", "teapot", "."))
+
+  expected_output <- tibble(
+    ordinal = c(1, 3),
+    behav_name = "behav",
+    onset = c(2.000, 8.000),
+    offset = c(3.500, 9.365),
+    first_frame = c(25, 57),
+    last_frame = c(33, 75),
+    obj = "spoon")
+
+  target_obj <- "spoon"
+
+  expect_equal(
+    extract_obj_events(target_obj, test_data),
+    expected_output
+  )
+
+})
