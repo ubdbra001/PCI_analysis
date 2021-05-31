@@ -175,3 +175,7 @@ convert_events_to_objs <- function(input_df){
   return(output_df)
 
 }
+
+parse_behav_events <- function(){
+
+}
