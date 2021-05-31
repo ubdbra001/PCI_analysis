@@ -353,7 +353,12 @@ test_that("ignores other objects", {
     obj1 = "spoon",
     obj2 = ".")
 
-  expected_output <- tibble()
+  expected_output <- tibble(
+    behav_name = character(),
+    onset = double(),
+    offset = double(),
+    obj = character()
+  )
 
   target_obj <- "teacup"
 
