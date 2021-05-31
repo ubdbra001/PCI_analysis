@@ -523,6 +523,34 @@ test_that("Non-proximal events extracted but remain unmerged", {
 # 7 Test convert_events_to_objs function ----
 
 # 7.1
+test_that("Single obj event successfully extracted", {
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", ".", "spoon"),
+    obj2 = c(".", "spoon", "."))
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = "behav",
+    onset = 2.000,
+    offset = 9.365,
+    first_frame = 25,
+    last_frame = 75,
+    obj = "spoon")
+
+  expect_equal(
+    convert_events_to_objs(test_data),
+    expected_output
+  )
+
+})
+
+# 7.2
 test_that("Two object events successfully extracted", {
   test_data <- tibble(
     ordinal = c(1, 2, 3),
@@ -538,10 +566,69 @@ test_that("Two object events successfully extracted", {
     ordinal = c(1, 1),
     behav_name = "behav",
     onset = c(2.000, 2.000),
-    offest = c(9.365, 3.500),
+    offset = c(9.365, 3.500),
     first_frame = c(25, 25),
     last_frame = c(75, 33),
     obj = c("spoon", "teacup")
+  )
+
+  expect_equal(
+    convert_events_to_objs(test_data),
+    expected_output
+  )
+
+})
+
+# 7.3
+test_that("Three object events successfully extracted across two cols ", {
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", "teapot", "spoon"),
+    obj2 = c("teacup", "spoon", "."))
+
+  expected_output <- tibble(
+    ordinal = c(1, 1, 2),
+    behav_name = "behav",
+    onset = c(2.000, 2.000, 4.200),
+    offset = c(9.365, 3.500, 7.500),
+    first_frame = c(25, 25, 35),
+    last_frame = c(75, 33, 56),
+    obj = c("spoon", "teacup", "teapot")
+  )
+
+  expect_equal(
+    convert_events_to_objs(test_data),
+    expected_output
+  )
+
+})
+
+# 7.3
+test_that("Six object events successfully extracted across three cols ", {
+  test_data <- tibble(
+    ordinal = c(1, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 4.200, 8.000),
+    offset = c(3.500, 7.500, 9.365),
+    first_frame = c(25, 35, 57),
+    last_frame = c(33, 56, 75),
+    obj1 = c("spoon", "teapot", "spoon"),
+    obj2 = c("teacup", "hat", "hat"),
+    obj3 = c(".", "teacup", "glasses"))
+
+  expected_output <- tibble(
+    ordinal = c(1, 3, 1, 2, 2, 3),
+    behav_name = "behav",
+    onset = c(2.000, 8.000, 2.000, 4.200, 4.200, 8.000),
+    offset = c(3.500, 9.365, 7.500, 7.500, 9.365, 9.365),
+    first_frame = c(25, 57, 25, 35, 35, 57),
+    last_frame = c(33, 75, 56, 56, 75, 75),
+    obj = c("spoon", "spoon", "teacup", "teapot", "hat", "glasses")
   )
 
   expect_equal(
