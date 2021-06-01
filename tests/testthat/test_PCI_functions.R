@@ -901,6 +901,29 @@ test_that("Object events extracted and merged across cols correctly", {
     expected_output)
 })
 
+# 8.11
+test_that("All events successfully extracted - keep ambiguous", {
 
+  behav_names <- c("PCIduration", "bookreading", "offCameras",
+                   "babyATparentface", "parentATbabyface",
+                   "babyobj", "parentobj", "parentnoun",
+                   "babyATobj", "parentATobj")
+
+  partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
+
+  test_data <- load_mock_PCIdata()
+
+  file_path <- test_path("mock_input", "mock_behavs.csv")
+  expected_output <- read_csv(file_path, col_types = "dcdddcdccc")
+
+  expect_equivalent(
+    map2_df(.x = behav_names,
+            .y = partial_matching,
+            raw_data = test_data,
+            remove_ambig = FALSE,
+            .f = parse_behav_events),
+    expected_output)
+
+})
 
 # 9 Test select_behavs function ----
