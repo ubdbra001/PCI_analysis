@@ -754,15 +754,78 @@ test_that("Proximal ambiguous and non-ambiguous events merged", {
 # 8.6
 test_that("Proximal events not merged when frame_gap is set to 0", {
 
+  behav_name <- 'babyATobj'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    behav_name = behav_name,
+    onset = c(2.520, 2.860),
+    offset = c(2.720, 3.060),
+    referent1 = "teacup",
+    referent2 = ".",
+    duration = c(0.200, 0.200))
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F,
+                       frame_gap = 0),
+    expected_output)
+
 })
 
 # 8.7
 test_that("Proximal events merged when frame_gap is set to 10", {
 
+  behav_name <- 'babyATobj'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = 1,
+    behav_name = behav_name,
+    onset = 2.520,
+    offset = 3.060,
+    referent1 = "teacup",
+    referent2 = ".",
+    duration = 0.540)
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F,
+                       frame_gap = 10),
+    expected_output)
+
 })
 
 # 8.8
-test_that("Proximal events with different labels not merged", {})
+test_that("Proximal events with different referents not merged", {
+
+  behav_name <- 'parentATobj'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    behav_name = behav_name,
+    onset = c(3.620, 3.780),
+    offset = c(3.760, 3.880),
+    referent1 = "teapot",
+    referent2 = c(".", "teacup"),
+    duration = c(0.140, 0.100))
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F,
+                       frame_gap = 2),
+    expected_output)
+
+
+})
 
 # 8.9
 test_that("Object events extracted from data correctly", {})
