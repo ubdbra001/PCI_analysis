@@ -301,6 +301,32 @@ test_that("Partial matching for behaviour", {
 
 })
 
+# 3.3
+test_that("Partial matching doesn't catch similarly named behavs",{
+
+  behav_name <- 'behav'
+  test_data <- tibble(
+    time = NA_integer_,
+    behav.var1 = 42,
+    behav.var2 = 66,
+    behav.var3 = 67,
+    behaviour.var1 = 1,
+    behaviour.var2 = 2,
+    bar.var1 = 3,
+    bar.var2 = 4)
+  expected_output <- tibble(
+    time = NA_integer_,
+    var1 = 42,
+    var2 = 66,
+    var3 = 67)
+
+  expect_equal(
+    extract_behavs(test_data, behav_name),
+    expected_output)
+
+
+})
+
 # 4 Test extend_event_by_frame functions ----
 
 # 4.1
