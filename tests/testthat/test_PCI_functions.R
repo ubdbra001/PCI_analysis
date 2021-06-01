@@ -668,23 +668,23 @@ test_that("Single event successfully extracted", {
 })
 
 # 8.2
-test_that("Two events successfully extracted", {
+test_that("Two events successfully extracted - include ambiguous", {
 
-  behav_name <- 'offCamera'
+  behav_name <- 'parentATbaby'
 
   test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = c(1, 2),
     behav_name = behav_name,
-    onset = c(0.180, 2.760),
-    offset = c(0.400, 2.900),
-    duration = c(0.220, 0.140))
+    onset = c(1.380, 2.140),
+    offset = c(1.600, 2.300),
+    duration = c(0.220, 0.160))
 
-  expect_equal(
+  expect_equivalent(
     parse_behav_events(behav_name,
                        raw_data = test_data,
-                       remove_ambig = T),
+                       remove_ambig = F),
     expected_output)
 
 })
@@ -734,23 +734,23 @@ test_that("Ambiguous events removed when flag is set to true", {
 })
 
 # 8.5
-test_that("Parse behavioural events - don't remove ambiguous", {
+test_that("Exculsion events extended by one frame at either end", {
 
-  behav_name <- 'parentATbaby'
+  behav_name <- 'offCameras'
 
   test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
     ordinal = c(1, 2),
     behav_name = behav_name,
-    onset = c(1.380, 2.140),
-    offset = c(1.600, 2.300),
-    duration = c(0.220, 0.160))
+    onset = c(0.160, 2.740),
+    offset = c(0.420, 2.920),
+    duration = c(0.260, 0.180))
 
-  expect_equivalent(
+  expect_equal(
     parse_behav_events(behav_name,
                        raw_data = test_data,
-                       remove_ambig = F),
+                       remove_ambig = T),
     expected_output)
 
 })
@@ -900,6 +900,7 @@ test_that("Object events extracted and merged across cols correctly", {
                        partial_matching = F),
     expected_output)
 })
+
 
 
 # 9 Test select_behavs function ----
