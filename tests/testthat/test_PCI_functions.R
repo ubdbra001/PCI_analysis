@@ -321,7 +321,7 @@ test_that("Partial matching doesn't catch similarly named behavs",{
     var3 = 67)
 
   expect_equal(
-    extract_behavs(test_data, behav_name),
+    extract_behavs(test_data, behav_name, partial = F),
     expected_output)
 
 
