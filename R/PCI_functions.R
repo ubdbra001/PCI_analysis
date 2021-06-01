@@ -182,6 +182,10 @@ convert_events_to_objs <- function(input_df){
                       input_df,
                       .f = extract_obj_events)
 
+  output_df <- mutate(output_df,
+                      event_ordinal = ordinal,
+                      ordinal = row_number())
+
   return(output_df)
 
 }
