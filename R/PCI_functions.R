@@ -21,6 +21,8 @@ merge_events <- function(events_df, frame_gap, behav_name = NULL) {
 
   if (is.null(behav_name)){
     col_select <- NULL
+  } else if (str_detect(behav_name, "AT(parent|baby)")) {
+    col_select <- NULL
   } else if (str_detect(behav_name, "(parent|baby)obj")){
     col_select <- "obj"
   } else if (str_detect(behav_name, "ATobj")) {
