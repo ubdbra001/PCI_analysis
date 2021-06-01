@@ -22,16 +22,16 @@ merge_events <- function(events_df, frame_gap, behav_name = NULL) {
   # Make sure df is not grouped before processing further
   if (is_grouped_df(events_df)) events_df <- ungroup(events_df)
 
-  if (is.null(behav_name)){
+  if (is.null(behav_name)) {
     col_select <- NULL
   } else if (str_detect(behav_name, "AT(parent|baby)")) {
     col_select <- NULL
-  } else if (str_detect(behav_name, "(parent|baby)obj")){
+  } else if (str_detect(behav_name, "(parent|baby)obj")) {
     col_select <- "obj"
   } else if (str_detect(behav_name, "ATobj")) {
     col_names <- names(events_df)
-    cols_inc_NAs <- str_extract(col_names, "referent.*")
-    col_select <- discard(cols_inc_NAs, is.na)
+    cols_inc_na <- str_extract(col_names, "referent.*")
+    col_select <- discard(cols_inc_na, is.na)
   }
 
   # Run through events backwards
@@ -70,7 +70,7 @@ merge_events <- function(events_df, frame_gap, behav_name = NULL) {
   return(events_df)
 }
 
-format_events <- function(input_df){
+format_events <- function(input_df) {
 
   # May remove the ungroup function if it is done earlier in the process
   input_df <- ungroup(input_df) %>%
@@ -93,10 +93,10 @@ extract_behavs <- function(input_data, behav_name, partial = T) {
   # Extract columns containing behaviour of interest and prepare them
   # for further analysis
 
-  if (partial){
-    pattern = paste0("^", behav_name, ".*\\.")
+  if (partial) {
+    pattern <- paste0("^", behav_name, ".*\\.")
   } else {
-    pattern = paste0("^", behav_name, "\\.")
+    pattern <- paste0("^", behav_name, "\\.")
   }
   # Drop any column that doesn't contain behav_name
   output_data <- select(input_data, time, matches(pattern)) %>%
@@ -107,7 +107,7 @@ extract_behavs <- function(input_data, behav_name, partial = T) {
   return(output_data)
 }
 
-extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
+extend_event_by_frame <- function(input_data, time_in, frame_shift = 1) {
 
   # Extends timings of an event by a specified number of frames
   #
@@ -143,7 +143,7 @@ extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
 
 }
 
-extract_unique_objects <- function(input_df){
+extract_unique_objects <- function(input_df) {
 
   # Extracts all the unique objects from all columns beginning with "obj"
   # Ignores anything not a word (spaces and punctuation)
@@ -161,7 +161,7 @@ extract_unique_objects <- function(input_df){
   return(unique_objs)
 }
 
-extract_obj_events <- function(object_label, input_df){
+extract_obj_events <- function(object_label, input_df) {
 
   # Extracts onset and offset for manipulation of specific objects from PCI
   # events
@@ -177,7 +177,7 @@ extract_obj_events <- function(object_label, input_df){
 
 }
 
-convert_events_to_objs <- function(input_df){
+convert_events_to_objs <- function(input_df) {
 
   # Takes a data frame of events tagged with objects and convertis it to a data
   # frame of object events, ie events for each opject manipulated
@@ -199,7 +199,7 @@ convert_events_to_objs <- function(input_df){
 }
 
 parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
-                               remove_ambig = F, frame_gap = 2){
+                               remove_ambig = F, frame_gap = 2) {
 
   # Takes raw data and parses selected behavioral events from it
   # Includes 'Remove Ambiguous' flag:
@@ -270,3 +270,6 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   return(behav_events)
 
 }
+
+# Finding and processing overlap functions ----
+
