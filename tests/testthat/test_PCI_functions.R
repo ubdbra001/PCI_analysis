@@ -828,7 +828,27 @@ test_that("Proximal events with different referents not merged", {
 })
 
 # 8.9
-test_that("Object events extracted from data correctly", {})
+test_that("Object events extracted from data correctly", {
+
+  behav_name <- 'babyobj'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = c(1, 2),
+    behav_name = behav_name,
+    onset = c(0.740, 0.740),
+    offset = c(1.110, 0.920),
+    obj = c("spoon", "fork"),
+    duration = c(0.370, 0.180),
+    event_ordinal = c(1, 1))
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F),
+    expected_output)
+})
 
 
 
