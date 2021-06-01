@@ -85,7 +85,6 @@ test_that("Events not merged when single referent is different", {
     expected_output)
 })
 
-
 # 1.5
 test_that("Events not merged when one of two referents are different",{
   test_data <- merging_data()
@@ -165,7 +164,6 @@ test_that("Events not merged when objs are different",{
     merge_events(test_data, frame_gap, behav_name),
     expected_output)
 })
-
 
 # 1.9
 test_that("Events merged when objs are the same",{
@@ -282,7 +280,7 @@ test_that("Specific behaviour is extracted correctly from data", {
 
 })
 
-# 3.1
+# 3.2
 test_that("Partial matching for behaviour", {
 
   behav_name <- 'behav'
