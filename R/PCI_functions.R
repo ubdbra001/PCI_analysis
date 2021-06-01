@@ -6,7 +6,7 @@ between <- data.table::between
 
 # Event proccessing functions ----
 
-merge_events <- function(events_df, frame_gap, behav_name) {
+merge_events <- function(events_df, frame_gap, behav_name = NULL) {
   # Merges events if gap betwen last and first frames is less than or equal to
   # specified value.
 
@@ -19,7 +19,15 @@ merge_events <- function(events_df, frame_gap, behav_name) {
   # Make sure df is not grouped before processing further
   if (is_grouped_df(events_df)) events_df <- ungroup(events_df)
 
-  label_col_exists <- "label" %in% names(events_df)
+  if (is.null(behav_name)){
+    col_select <- NULL
+  } else if (str_detect(behav_name, "(parent|baby)obj")){
+    col_select <- "obj"
+  } else if (str_detect(behav_name, "ATobj")) {
+    col_names <- names(events_df)
+    cols_inc_NAs <- str_extract(col_names, "referent.*")
+    col_select <- discard(cols_inc_NAs, is.na)
+  }
 
   # Run through events backwards
   for (row_n in seq(from = nrow(events_df), to = 2)) {
@@ -30,13 +38,15 @@ merge_events <- function(events_df, frame_gap, behav_name) {
 
     vals_to_update <- tibble()
 
+    same_label <- TRUE
+
     # If the label column exists in the data frame
-    if (label_col_exists) {
+    if (!is.null(col_select)) {
       # See if the labels for the two events match
-      same_label <- current_row$label == preceding_row$label
-    } else {
-      # If it doesn't then just set as true
-      same_label <- TRUE
+      for (col_name in col_select) {
+        same_val <- pull(current_row, col_name) == pull(preceding_row, col_name)
+        same_label <- same_label & same_val
+      }
     }
 
     # See if the two events are within range of one another
