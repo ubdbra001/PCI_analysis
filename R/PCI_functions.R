@@ -196,14 +196,16 @@ convert_events_to_objs <- function(input_df){
 }
 
 parse_behav_events <- function(behav_name, raw_data,
-                               remove_ambig = F, frame_gap = 2){
+                               remove_ambig = F,
+                               frame_gap = 2,
+                               partial_matching = T){
 
   # Takes raw data and parses selected behavioral events from it
   # Includes 'Remove Ambiguous' flag:
   #   Whether to keep or remove looks coded as ambiguous
 
   # Extract behav_name columns from data
-  raw_behav <- extract_behavs(raw_data, behav_name)
+  raw_behav <- extract_behavs(raw_data, behav_name, partial_matching)
 
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
                          frame_n = row_number(),
