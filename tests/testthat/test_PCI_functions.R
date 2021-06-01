@@ -72,34 +72,124 @@ test_that("Merging when frame_gap equals 5", {
 })
 
 # 1.4
-test_that("Events not merged when labels are different", {
+test_that("Events not merged when single referent is different", {
   test_data <- merging_data()
-  test_data <- add_column(test_data, label = c("a", "a", "b", "b"))
+  test_data <- add_column(test_data, referent1 = c("a", "a", "b", "b"))
   expected_output <- test_data
+
   frame_gap <- 3
+  behav_name <- "parentATobj"
 
   expect_equal(
-    merge_events(test_data, frame_gap),
+    merge_events(test_data, frame_gap, behav_name),
     expected_output)
 })
 
+
 # 1.5
-test_that("Events merged when labels are the same", {
+test_that("Events not merged when one of two referents are different",{
   test_data <- merging_data()
-  test_data <- add_column(test_data, label = c("a", "a", "a", "a"))
+  test_data <- mutate(test_data,
+                      referent1 = c("a", "a", "a", "a"),
+                      referent2 = c("a", "a", "b", "a"))
+  expected_output <- test_data
+
+  frame_gap <- 3
+  behav_name <- "babyATobj"
+
+  expect_equal(
+    merge_events(test_data, frame_gap, behav_name),
+    expected_output)
+
+})
+
+# 1.6
+test_that("Single event merged when frame gap = 8, as referents are different",{
+  test_data <- merging_data()
+  test_data <- mutate(test_data,
+                      referent1 = "a",
+                      referent10 = c(".", ".", "d", "."),
+                      referent42 = "e")
+  expected_output <- tibble(
+    ordinal = c(1,3,4),
+    first_frame = c(1, 34, 55),
+    last_frame = c(32, 50, 75),
+    onset = c(450, 1539, 3000),
+    offset = c(1308, 2067, 4000),
+    referent1 = c("a", "a", "a"),
+    referent10 = c(".", "d", "."),
+    referent42 = c("e", "e", "e"))
+
+  frame_gap <- 8
+  behav_name <- "parentATobj"
+
+  expect_equal(
+    merge_events(test_data, frame_gap, behav_name),
+    expected_output)
+
+})
+
+# 1.7
+test_that("Events merged when referents are the same", {
+  test_data <- merging_data()
+  test_data <- mutate(test_data,
+                      referent1 = c("a", "a", "a", "a"),
+                      referent23 = c("b", "b", "b", "b"))
   expected_output <- tibble(
     ordinal = c(1, 2, 4),
     first_frame = c(1, 12, 55),
     last_frame = c(5, 50, 75),
     onset = c(450, 813, 3000),
     offset = c(582, 2067, 4000),
-    label = "a")
+    referent1 = "a",
+    referent23 = "b")
+
   frame_gap <- 3
+  behav_name <- "babyATobj"
 
   expect_equal(
-    merge_events(test_data, frame_gap),
+    merge_events(test_data, frame_gap, behav_name),
     expected_output)
 })
+
+# 1.8
+test_that("Events not merged when objs are different",{
+  test_data <- merging_data()
+  test_data <- add_column(test_data, obj = c("a", "a", "b", "b"))
+  expected_output <- test_data
+
+  frame_gap <- 3
+  behav_name <- "babyobj"
+
+  expect_equal(
+    merge_events(test_data, frame_gap, behav_name),
+    expected_output)
+})
+
+
+# 1.9
+test_that("Events merged when objs are the same",{
+  test_data <- merging_data()
+  test_data <- add_column(test_data, obj = c("a", "a", "b", "b"))
+  expected_output <- tibble(
+    ordinal = c(1, 2, 3),
+    first_frame = c(1, 12, 34),
+    last_frame = c(5, 32, 75),
+    onset = c(450, 813, 1539),
+    offset = c(582, 1308, 4000),
+    obj = c("a", "a", "b"))
+
+  frame_gap <- 5
+  behav_name <- "parentobj"
+
+
+  expect_equal(
+    merge_events(test_data, frame_gap, behav_name),
+    expected_output)
+})
+
+
+# Need to add tests for referents, not labels.
 
 # 2 Test format_events function ----
 
