@@ -861,21 +861,45 @@ test_that("Object events extracted from data correctly", {
   test_data <- load_mock_PCIdata()
 
   expected_output <- tibble(
-    ordinal = c(1, 2),
+    ordinal = c(1, 3),
     behav_name = behav_name,
     onset = c(0.740, 0.740),
-    offset = c(1.110, 0.920),
+    offset = c(1.100, 0.920),
     obj = c("spoon", "fork"),
-    duration = c(0.370, 0.180),
-    event_ordinal = c(1, 1))
+    event_ordinal = c(1, 1),
+    duration = c(0.360, 0.180))
 
   expect_equivalent(
     parse_behav_events(behav_name,
                        raw_data = test_data,
-                       remove_ambig = F),
+                       remove_ambig = F,
+                       partial_matching = F),
     expected_output)
 })
 
+# 8.10
+test_that("Object events extracted and merged across cols correctly", {
+
+  behav_name <- 'parentobj'
+
+  test_data <- load_mock_PCIdata()
+
+  expected_output <- tibble(
+    ordinal = c(1, 4, 5, 6),
+    behav_name = behav_name,
+    onset = c(1.240, 1.240, 1.560, 1.400),
+    offset = c(1.700, 1.380, 1.700, 1.700),
+    obj = c("spoon", "knife", "knife", "fork"),
+    event_ordinal = c(1, 1, 3, 2),
+    duration = offset - onset)
+
+  expect_equivalent(
+    parse_behav_events(behav_name,
+                       raw_data = test_data,
+                       remove_ambig = F,
+                       partial_matching = F),
+    expected_output)
+})
 
 
 # 9 Test select_behavs function ----
