@@ -248,12 +248,14 @@ parse_behav_events <- function(behav_name, raw_data,
   }
 
   # Merge proximal events
-  if (str_detect(behav_name, "(parent|baby)AT")){
+  if (str_detect(behav_name, "(parent|baby)(AT|obj)")){
     # Should only be for looking events, not actions, with consistent labels
     #
     # Could modify convert_events_to_objs so merging done here, but would need
     # to account for different variable names (label/obj) in merge_events
-    behav_events <- merge_events(behav_events, frame_gap = frame_gap)
+    behav_events <- merge_events(behav_events,
+                                 frame_gap = frame_gap,
+                                 behav_name)
   }
 
   # Format events (convert ms to s, add duration, drop unneeded columns)
