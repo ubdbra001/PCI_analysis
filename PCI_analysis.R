@@ -1,5 +1,5 @@
 # Load custom functions & libraries ####
-source("R/PCI_functions.r")
+source("R/PCI_functions.R")
 
 # Set up variables ####
 
