@@ -302,3 +302,7 @@ find_overlaps <- function(behav_name1, behav_name2, df_in, incbounds = FALSE) {
   return(overlap_df)
 
 }
+
+extend_overlap_events <- function(behav_df_in, overlapping_events) {
+
+}
