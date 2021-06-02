@@ -1,9 +1,7 @@
 # Imports and sourcing functions to test ----
 
 library(testthat)
-library(dplyr)
-library(purrr)
-library(readr)
+library(tidyverse)
 
 source("../../R/PCI_functions.R")
 
