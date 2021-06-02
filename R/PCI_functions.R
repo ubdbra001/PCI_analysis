@@ -282,4 +282,23 @@ select_behav <- function(input_df, behav_selected, add_col_suffix = NULL) {
 
 find_overlaps <- function(behav_name1, behav_name2, df_in, incbounds = FALSE) {
 
+  df1 <- select_behav(df_in, behav_name1, add_col_suffix = ".1")
+  df2 <- select_behav(df_in,behav_name2, add_col_suffix = ".2")
+
+  expanded_dfs <- crossing(df1, df2)
+
+  overlap_df <- mutate(
+    expanded_dfs,
+    onset1_in_ev2 = between(onset.1, onset.2, offset.2,
+                            incbounds, NAbounds = NA),
+    offset1_in_ev2 = between(offset.1, onset.2, offset.2,
+                             incbounds, NAbounds = NA),
+    onset2_in_ev1 = between(onset.2, onset.1, offset.1,
+                            incbounds, NAbounds = NA),
+    offset2_in_ev1 = between(offset.2, onset.1, offset.1,
+                             incbounds, NAbounds = NA)) %>%
+    mutate(across(contains("_in_"), replace_na, FALSE))
+
+  return(overlap_df)
+
 }
