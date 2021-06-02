@@ -1044,3 +1044,242 @@ test_that("Overlap between two events found: event 1 before event 2", {
     expected_output)
 
 })
+
+# 10.2
+test_that("Overlap between two events found: event 1 during event 2", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(5.4, 2.5),
+    offset = c(5.6, 7.2)
+  )
+
+  expected_output <- tibble(
+    behav_name.1 = behav_name1,
+    onset.1 = 5.4,
+    offset.1 = 5.6,
+    behav_name.2 = behav_name2,
+    onset.2 = 2.5,
+    offset.2 = 7.2,
+    onset1_in_ev2 = TRUE,
+    offset1_in_ev2 = TRUE,
+    onset2_in_ev1 = FALSE,
+    offset2_in_ev1 = FALSE)
+
+  expect_equivalent(
+    find_overlaps(behav_name1, behav_name2, test_data),
+    expected_output)
+
+})
+
+# 10.3
+test_that("Overlap between two events found: event 2 before event 1", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(5.4, 2.5),
+    offset = c(7.2, 5.6)
+  )
+
+  expected_output <- tibble(
+    behav_name.1 = behav_name1,
+    onset.1 = 5.4,
+    offset.1 = 7.2,
+    behav_name.2 = behav_name2,
+    onset.2 = 2.5,
+    offset.2 = 5.6,
+    onset1_in_ev2 = TRUE,
+    offset1_in_ev2 = FALSE,
+    onset2_in_ev1 = FALSE,
+    offset2_in_ev1 = TRUE)
+
+  expect_equivalent(
+    find_overlaps(behav_name1, behav_name2, test_data),
+    expected_output)
+
+})
+
+# 10.4
+test_that("Overlap between two events found: event 2 during event 1", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(2.5, 5.4),
+    offset = c(7.2, 5.6)
+  )
+
+  expected_output <- tibble(
+    behav_name.1 = behav_name1,
+    onset.1 = 2.5,
+    offset.1 = 7.2,
+    behav_name.2 = behav_name2,
+    onset.2 = 5.4,
+    offset.2 = 5.6,
+    onset1_in_ev2 = FALSE,
+    offset1_in_ev2 = FALSE,
+    onset2_in_ev1 = TRUE,
+    offset2_in_ev1 = TRUE)
+
+  expect_equivalent(
+    find_overlaps(behav_name1, behav_name2, test_data),
+    expected_output)
+
+})
+
+# 10.5
+test_that("Behavs with NAs do not return overlaps", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(2.5, NA),
+    offset = c(7.2, NA)
+  )
+
+  actual_output <- find_overlaps(behav_name1, behav_name2, test_data)
+  actual_output <- select(actual_output,
+                          onset1_in_ev2, offset1_in_ev2,
+                          onset2_in_ev1, offset2_in_ev1)
+
+  expected_output <- tibble(
+    onset1_in_ev2 = FALSE,
+    offset1_in_ev2 = FALSE,
+    onset2_in_ev1 = FALSE,
+    offset2_in_ev1 = FALSE)
+
+  expect_equivalent(
+    actual_output,
+    expected_output)
+})
+
+# 10.6
+test_that("Boundary overlaps not found by default", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(2.5, 7.2),
+    offset = c(7.2, 10.3)
+  )
+
+  actual_output <- find_overlaps(behav_name1, behav_name2, test_data)
+  actual_output <- select(actual_output,
+                          onset1_in_ev2, offset1_in_ev2,
+                          onset2_in_ev1, offset2_in_ev1)
+
+  expected_output <- tibble(
+    onset1_in_ev2 = FALSE,
+    offset1_in_ev2 = FALSE,
+    onset2_in_ev1 = FALSE,
+    offset2_in_ev1 = FALSE)
+
+  expect_equivalent(
+    actual_output,
+    expected_output)
+
+})
+
+# 10.7
+test_that("Boundary overlaps found when incbounds is True", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(2.5, 7.2),
+    offset = c(7.2, 10.3)
+  )
+
+  actual_output <- find_overlaps(behav_name1, behav_name2, test_data,
+                                 incbounds = TRUE)
+  actual_output <- select(actual_output,
+                          onset1_in_ev2, offset1_in_ev2,
+                          onset2_in_ev1, offset2_in_ev1)
+
+  expected_output <- tibble(
+    onset1_in_ev2 = FALSE,
+    offset1_in_ev2 = TRUE,
+    onset2_in_ev1 = TRUE,
+    offset2_in_ev1 = FALSE)
+
+  expect_equivalent(
+    actual_output,
+    expected_output)
+
+})
+
+# 10.8
+test_that("Function can handle multiple events at once", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(rep(behav_name1, 3), rep(behav_name2, 2)),
+    onset = c(2.5, 6.2, 11.0, 4.2, 11.5),
+    offset = c(5.7, 9.8, 12.0, 7.8, 11.7)
+  )
+
+  actual_output <- find_overlaps(behav_name1, behav_name2, test_data)
+  actual_output <- select(actual_output,
+                          onset1_in_ev2, offset1_in_ev2,
+                          onset2_in_ev1, offset2_in_ev1)
+
+  expected_output <- tibble(
+    onset1_in_ev2 = c(FALSE, FALSE, TRUE, FALSE, FALSE, FALSE),
+    offset1_in_ev2 = c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE),
+    onset2_in_ev1 = c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE),
+    offset2_in_ev1 = c(FALSE, FALSE, TRUE, FALSE, FALSE, TRUE))
+
+  expect_equivalent(
+    actual_output,
+    expected_output)
+
+})
+
+# 10.9
+test_that("Function can handle matching partial behav_names", {
+
+  behav_name1 <- "behav1"
+  behav_name1a <- "behav1a"
+  behav_name1b <- "behav1b"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(rep(behav_name1a, 2), behav_name1b, behav_name2),
+    onset = c(2.5, 11.0, NA, 4.2),
+    offset = c(5.7, 12.0, NA, 7.8)
+  )
+
+  expected_output <- tibble(
+    behav_name.1 = c(behav_name1a, behav_name1a, behav_name1b),
+    onset.1 = c(2.5, 11.0, NA),
+    offset.1 = c(5.7, 12.0, NA),
+    behav_name.2 = rep(behav_name2, 3),
+    onset.2 = rep(4.2, 3),
+    offset.2 = rep(7.8, 3),
+    onset1_in_ev2 = c(FALSE, FALSE, FALSE),
+    offset1_in_ev2 = c(TRUE, FALSE, FALSE),
+    onset2_in_ev1 = c(TRUE, FALSE, FALSE),
+    offset2_in_ev1 = c(FALSE, FALSE, FALSE))
+
+  expect_equivalent(
+    find_overlaps(behav_name1, behav_name2, test_data),
+    expected_output)
+
+})
+
