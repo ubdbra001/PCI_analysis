@@ -1011,3 +1011,36 @@ test_that("Suffix added to variable names",{
   expect_equivalent(
     select_behav(test_data, behav_name, add_col_suffix = ".test"),
     expected_output)
+})
+
+# 10 Test find_overlaps function ----
+
+# 10.1
+test_that("Overlap between two events found: event 1 before event 2", {
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  test_data <- tibble(
+    behav_name = c(behav_name1, behav_name2),
+    onset = c(2.5, 5.4),
+    offset = c(5.6, 7.2)
+  )
+
+  expected_output <- tibble(
+    behav_name.1 = behav_name1,
+    onset.1 = 2.5,
+    offset.1 = 5.6,
+    behav_name.2 = behav_name2,
+    onset.2 = 5.4,
+    offset.2 = 7.2,
+    onset1_in_ev2 = FALSE,
+    offset1_in_ev2 = TRUE,
+    onset2_in_ev1 = TRUE,
+    offset2_in_ev1 = FALSE)
+
+  expect_equivalent(
+    find_overlaps(behav_name1, behav_name2, test_data),
+    expected_output)
+
+})
