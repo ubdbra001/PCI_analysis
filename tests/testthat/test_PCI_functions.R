@@ -929,3 +929,86 @@ test_that("All events successfully extracted - keep ambiguous", {
 })
 
 # 9 Test select_behavs function ----
+
+load_mock_behavData <- function(){
+
+  file_path <- test_path("mock_input", "mock_behavs.csv")
+  test_data <- read_csv(file_path)
+
+  return(test_data)
+
+}
+
+# 9.1
+test_that("Single behav selected",{
+
+  test_data <- load_mock_behavData()
+
+  behav_name <- "parentobj"
+
+  expected_output <- tibble(
+    ordinal = c(1, 4, 5, 6),
+    behav_name = behav_name,
+    onset = c(1.24, 1.24, 1.56, 1.4),
+    offset = c(1.7, 1.38, 1.7, 1.7),
+    duration = offset - onset,
+    obj = c("spoon", "knife", "knife", "fork"),
+    event_ordinal = c(1, 1, 3, 2),
+    label = NA_character_,
+    referent1 = NA_character_,
+    referent2 = NA_character_)
+
+  expect_equal(
+    select_behav(test_data, behav_name),
+    expected_output)
+
+})
+
+# 9.2
+test_that("Nothing returned when selected behav not present",{
+
+  test_data <- load_mock_behavData()
+
+  behav_name <- "behav"
+
+  expected_output <- tibble(
+    ordinal = numeric(),
+    behav_name = character(),
+    onset = numeric(),
+    offset = numeric(),
+    duration = numeric(),
+    obj = character(),
+    event_ordinal = numeric(),
+    label = character(),
+    referent1 = character(),
+    referent2 = character())
+
+  expect_equal(
+    select_behav(test_data, behav_name),
+    expected_output)
+
+})
+
+# 9.3
+test_that("Suffix added to variable names",{
+
+  test_data <- load_mock_behavData()
+
+  behav_name <- "parentobj"
+
+  expected_output <- tibble(
+    ordinal.test = c(1, 4, 5, 6),
+    behav_name.test = behav_name,
+    onset.test = c(1.24, 1.24, 1.56, 1.4),
+    offset.test = c(1.7, 1.38, 1.7, 1.7),
+    duration.test = offset - onset,
+    obj.test = c("spoon", "knife", "knife", "fork"),
+    event_ordinal.test = c(1, 1, 3, 2),
+    label.test = NA_character_,
+    referent1.test = NA_character_,
+    referent2.test = NA_character_)
+
+  expect_equal(
+    select_behav(test_data, behav_name, add_col_suffix = ".test"),
+    expected_output)
+})
