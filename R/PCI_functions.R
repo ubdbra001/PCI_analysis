@@ -273,3 +273,6 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
 
 # Finding and processing overlap functions ----
 
+select_behav <- function(input_df, behav_selected, add_col_suffix = NULL) {
+
+}
