@@ -930,8 +930,10 @@ test_that("All events successfully extracted - keep ambiguous", {
 
 load_mock_behavData <- function(){
 
+  data_col_def <- "dcdddcdccc"
+
   file_path <- test_path("mock_input", "mock_behavs.csv")
-  test_data <- read_csv(file_path)
+  test_data <- read_csv(file_path, col_types = data_col_def)
 
   return(test_data)
 
@@ -956,7 +958,7 @@ test_that("Single behav selected",{
     referent1 = NA_character_,
     referent2 = NA_character_)
 
-  expect_equal(
+  expect_equivalent(
     select_behav(test_data, behav_name),
     expected_output)
 
@@ -981,7 +983,7 @@ test_that("Nothing returned when selected behav not present",{
     referent1 = character(),
     referent2 = character())
 
-  expect_equal(
+  expect_equivalent(
     select_behav(test_data, behav_name),
     expected_output)
 
@@ -999,14 +1001,13 @@ test_that("Suffix added to variable names",{
     behav_name.test = behav_name,
     onset.test = c(1.24, 1.24, 1.56, 1.4),
     offset.test = c(1.7, 1.38, 1.7, 1.7),
-    duration.test = offset - onset,
+    duration.test = offset.test - onset.test,
     obj.test = c("spoon", "knife", "knife", "fork"),
     event_ordinal.test = c(1, 1, 3, 2),
     label.test = NA_character_,
     referent1.test = NA_character_,
     referent2.test = NA_character_)
 
-  expect_equal(
+  expect_equivalent(
     select_behav(test_data, behav_name, add_col_suffix = ".test"),
     expected_output)
-})
