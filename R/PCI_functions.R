@@ -273,4 +273,8 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
 
 select_behav <- function(input_df, behav_selected, add_col_suffix = NULL) {
 
+  df_out <- filter(input_df, str_detect(behav_name, behav_selected)) %>%
+    rename_all(add_col_suffix, .funs = str_c)
+
+  return(df_out)
 }
