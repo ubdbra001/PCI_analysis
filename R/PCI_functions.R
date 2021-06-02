@@ -278,3 +278,8 @@ select_behav <- function(input_df, behav_selected, add_col_suffix = NULL) {
 
   return(df_out)
 }
+
+
+find_overlaps <- function(behav_name1, behav_name2, df_in, incbounds = FALSE) {
+
+}
