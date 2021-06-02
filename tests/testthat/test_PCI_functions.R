@@ -1283,3 +1283,39 @@ test_that("Function can handle matching partial behav_names", {
 
 })
 
+# 11 Test extend_overlap_events function ----
+
+# 11.1
+test_that("Single target event extended to encompass single overlapped event", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2),
+    behav_name = c("behav1", "behav2"),
+    onset = c(2.5, 4.2),
+    offset = c(5.7, 7.8)
+  )
+
+  test_crossed_data <- tibble(
+    event_ID.1 = 1,
+    behav_name.1 = "behav1",
+    onset.1 = 2.5,
+    offset.1 = 5.7,
+    event_ID.2 = 2,
+    behav_name.2 = "behav2",
+    onset.2 = 4.2,
+    offset.2 = 7.8)
+
+  expected_output <- tibble(
+    event_ID = c(1, 2),
+    behav_name = c("behav1", "behav2"),
+    onset = c(2.5, 2.5),
+    offset = c(5.7, 7.8),
+    duration = offset- onset
+  )
+
+  expect_equivalent(
+    extend_overlaps(test_behav_data, test_crossed_data),
+    expected_output
+  )
+
+})
