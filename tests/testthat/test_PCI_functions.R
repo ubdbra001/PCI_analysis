@@ -1319,3 +1319,49 @@ test_that("Single target event extended to encompass single overlapped event", {
   )
 
 })
+
+# 11.2
+test_that("Single target event extended to encompass two overlapped events", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav1", "behav2"),
+    onset = c(2.5, 6.5, 4.2),
+    offset = c(5.7, 9.1, 7.8)
+  )
+
+  test_crossed_data <- tibble(
+    event_ID.1 = c(1,2),
+    behav_name.1 = "behav1",
+    onset.1 = c(2.5, 6.5),
+    offset.1 = c(5.7, 9.1),
+    event_ID.2 = 3,
+    behav_name.2 = "behav2",
+    onset.2 = 4.2,
+    offset.2 = 7.8)
+
+  expected_output <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav1", "behav2"),
+    onset = c(2.5, 6.5, 2.5),
+    offset = c(5.7, 9.1, 9.1),
+    duration = offset- onset
+  )
+
+  expect_equivalent(
+    extend_overlaps(test_behav_data, test_crossed_data),
+    expected_output
+  )
+
+})
+
+# 11.3
+test_that("Single target event that completely overlaps event not changed", {
+
+})
+
+# 11.4
+test_that("Multiple target events extended to encompass multiple overlapped events", {
+
+})
+
