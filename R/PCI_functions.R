@@ -254,7 +254,7 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   }
 
   # Merge proximal events
-  if (str_detect(behav_name, "(parent|baby)(AT|obj)")){
+  if (str_detect(behav_name, "(parent|baby)(AT|obj)")) {
     # Should only be for looking events, not actions, with consistent labels
     #
     # Could modify convert_events_to_objs so merging done here, but would need
