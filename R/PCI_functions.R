@@ -394,7 +394,11 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
 # Add the stats to the data_out variable
 add_stats <- function(data_in, sig.digits = 3) {
 
+add_behav_name_suffix <- function(data_in, suffix) {
+  data_out <- mutate(data_in,
+                     behav_name = str_c(behav_name, suffix, sep = "_"))
 
+  return(data_out)
 }
 
 
