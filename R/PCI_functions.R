@@ -303,6 +303,28 @@ find_overlaps <- function(behav_name1, behav_name2, df_in, incbounds = FALSE) {
 
 }
 
-extend_overlap_events <- function(behav_df_in, overlapping_events) {
+extend_event_overlaps <- function(behav_df_in, overlapping_events) {
 
+  # Set to proccess data rowwise
+  adjusted_overlapping_events <- rowwise(overlapping_events) %>%
+    # Find which onset was earlier and which offset was later across each
+    # overlapping event pairing
+    mutate(event_ID = event_ID.2,
+           behav_name = behav_name.2,
+           onset = min(onset.1, onset.2),
+           offset = max(offset.1, offset.2))
+
+  # Group the event_IDs together and find the overall earliest/latest
+  # onset/offset for that event
+  adjusted_events <- group_by(adjusted_overlapping_events, event_ID) %>%
+    summarise(behav_name = first(behav_name),
+              onset = min(onset),
+              offset = max(offset),
+              .groups = "drop")
+
+  # Update main behav df with new timings
+  behav_df_out <- rows_upsert(behav_df_in, adjusted_events, by = "event_ID") %>%
+    mutate(duration = offset - onset)
+
+  return(behav_df_out)
 }
