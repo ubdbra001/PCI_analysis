@@ -390,3 +390,12 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
 
   return(overlapping_df)
 }
+
+# Process looks ----
+
+process_look_events <- function(data_in, suffix = NULL) {
+
+
+}
+
+
