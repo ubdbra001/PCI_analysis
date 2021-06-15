@@ -1696,7 +1696,10 @@ test_that("Events encompassed by another event correctly detected", {
   )
 })
 
-# 14 Test add_stats function ----
+# 14 Test summarise_events function ----
+
+
+
 
 # 15 Test add_behav_name_suffix function ----
 
