@@ -330,9 +330,22 @@ extend_event_overlaps <- function(behav_df_in, overlapping_events) {
 }
 
 
-remove_overlapping_events <- function(target_event, comparator_event,
+remove_overlapping_events <- function(target_ev_name, comparator_ev_name,
                                       behav_df_in, extend = FALSE){
 
+  crossed_events <- find_overlaps(comparator_ev_name,
+                                  target_ev_name,
+                                  behav_df_in)
+  overlapping_events <- filter(crossed_events, onset1_in_ev2 | offset1_in_ev2)
+
+  if (extend & nrow(overlapping_events) > 0){
+    behav_df_in <- extend_event_overlaps(behav_df_in, overlapping_events)
+  }
+
+  behav_df_out <- filter(behav_df_in,
+                         !(event_ID %in% overlapping_events$event_ID.1))
+
+  return(behav_df_out)
 
 }
 
