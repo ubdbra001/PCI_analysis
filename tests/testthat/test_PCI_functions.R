@@ -1828,6 +1828,32 @@ test_that("Sig digit argument works correctly", {
   )
 })
 
+# 14.6
+test_that("suffix added to behav_names", {
+
+  test_behav_data <- tibble(
+    behav_name = c(rep("behav_name1", 4), rep("behav_name2", 2)),
+    onset = c(1, 13, 25, 37, 24, 57),
+    offset = c(2, 16, 27, 40, 26, 59),
+    duration = offset - onset
+  )
+
+  expected_output <- tibble(
+    behav_name = c("behav_name1_noBR", "behav_name2_noBR"),
+    .duration = c(9, 4),
+    .mean = c(2.25, 2),
+    .sd = c(0.957, 0),
+    .median = c(2.5, 2),
+    .IQR = c(1.25, 0),
+    .num = c(4, 2)
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data, suffix = "noBR"),
+    expected_output
+  )
+})
+
 # 15 Test add_behav_name_suffix function ----
 
 # 15.1
