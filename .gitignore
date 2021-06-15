@@ -4,3 +4,4 @@ data/*.csv
 .~lock*.csv#
 packrat/src/
 packrat/bundles/
+.Rhistory
