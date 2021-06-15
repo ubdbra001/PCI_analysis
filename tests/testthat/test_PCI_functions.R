@@ -1388,7 +1388,6 @@ test_that("Single target event that completely overlaps event not changed", {
 # 11.4
 test_that("Multiple target events extended to encompass multiple overlapped events", {
 
-
   test_behav_data <- tibble(
     event_ID = c(1, 2, 3, 4),
     behav_name = c("behav1", "behav1", "behav2", "behav2"),
@@ -1422,3 +1421,56 @@ test_that("Multiple target events extended to encompass multiple overlapped even
 
 })
 
+# 12 Test find_overlapping_events function ----
+
+# 12.1
+test_that("Empty tibble returned when no overlaps found", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav2", "behav2"),
+    onset = c(2.5, 6.2, 12.7),
+    offset = c(5.7, 7.8, 16.6)
+  )
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  expected_output <- tibble(
+    behav_name = character(),
+    onset = numeric(),
+    offset = numeric(),
+    which_first = character()
+  )
+
+  expect_equivalent(
+    find_overlapping_events(test_behav_data, behav_name1, behav_name2),
+    expected_output
+  )
+})
+
+# 12.2
+test_that("Single overlapping event found", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav2", "behav2"),
+    onset = c(2.5, 4.2, 12.7),
+    offset = c(5.7, 7.8, 16.6)
+  )
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  expected_output <- tibble(
+    behav_name = "overlapping_events",
+    onset = 4.2,
+    offset = 5.7,
+    which_first = "behav1_first"
+  )
+
+  expect_equivalent(
+    find_overlapping_events(test_behav_data, behav_name1, behav_name2),
+    expected_output
+  )
+})
