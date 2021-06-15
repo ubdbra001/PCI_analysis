@@ -1522,6 +1522,7 @@ test_that("Empty tibble returned when no overlaps found", {
     behav_name = character(),
     onset = numeric(),
     offset = numeric(),
+    duration = numeric(),
     which_first = character()
   )
 
@@ -1548,6 +1549,7 @@ test_that("Single overlapping event found", {
     behav_name = "overlapping_events",
     onset = 4.2,
     offset = 5.7,
+    duration = offset - onset,
     which_first = "behav1_first"
   )
 
@@ -1574,6 +1576,7 @@ test_that("Multiple overlapping events found", {
     behav_name = "overlapping_events",
     onset = c(4.2, 16.3),
     offset = c(5.7, 16.6),
+    duration = offset - onset,
     which_first = c("behav1_first", "behav2_first")
   )
 
@@ -1600,6 +1603,7 @@ test_that("Unrelated event ignored", {
     behav_name = "overlapping_events",
     onset = 16.3,
     offset = 16.6,
+    duration = offset - onset,
     which_first = "behav2_first"
   )
 
@@ -1626,6 +1630,7 @@ test_that("Custom behav_name for output works", {
     behav_name = "custom_event",
     onset = 16.3,
     offset = 16.6,
+    duration = offset - onset,
     which_first = "behav2_first"
   )
 
@@ -1653,6 +1658,7 @@ test_that("Custom which_first_name parameter works correctly", {
     behav_name = "overlapping_events",
     onset = c(4.2, 16.3),
     offset = c(5.7, 16.6),
+    duration = offset - onset,
     which_first = c("custom_first", "event_first")
   )
 
@@ -1680,6 +1686,7 @@ test_that("Events encompassed by another event correctly detected", {
     behav_name = "overlapping_events",
     onset = c(4.2, 6.0, 16.3),
     offset = c(5.7, 7.0, 16.6),
+    duration = offset - onset,
     which_first = c("behav1_first", "behav2_first", "behav2_first")
   )
 
