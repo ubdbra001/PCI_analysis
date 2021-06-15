@@ -1689,3 +1689,7 @@ test_that("Events encompassed by another event correctly detected", {
   )
 })
 
+# 14 Test add_stats function ----
+
+
+
