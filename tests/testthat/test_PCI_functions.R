@@ -645,6 +645,17 @@ load_mock_PCIdata <- function(){
   return(test_data)
 }
 
+load_mock_behavData <- function(){
+
+  data_col_def <- "dcdddcdcc"
+
+  file_path <- test_path("mock_input", "mock_behavs.csv")
+  test_data <- read_csv(file_path, col_types = data_col_def)
+
+  return(test_data)
+
+}
+
 # 8.1
 test_that("Single event successfully extracted", {
 
@@ -913,8 +924,7 @@ test_that("All events successfully extracted - keep ambiguous", {
 
   test_data <- load_mock_PCIdata()
 
-  file_path <- test_path("mock_input", "mock_behavs.csv")
-  expected_output <- read_csv(file_path, col_types = "dcdddcdccc")
+  expected_output <- load_mock_behavData()
 
   expect_equivalent(
     map2_df(.x = behav_names,
@@ -927,17 +937,6 @@ test_that("All events successfully extracted - keep ambiguous", {
 })
 
 # 9 Test select_behavs function ----
-
-load_mock_behavData <- function(){
-
-  data_col_def <- "dcdddcdccc"
-
-  file_path <- test_path("mock_input", "mock_behavs.csv")
-  test_data <- read_csv(file_path, col_types = data_col_def)
-
-  return(test_data)
-
-}
 
 # 9.1
 test_that("Single behav selected",{
