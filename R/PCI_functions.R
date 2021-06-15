@@ -177,7 +177,7 @@ extract_obj_events <- function(object_label, input_df) {
 
 convert_events_to_objs <- function(input_df) {
 
-  # Takes a data frame of events tagged with objects and convertis it to a data
+  # Takes a data frame of events tagged with objects and converts it to a data
   # frame of object events, ie events for each opject manipulated
 
   # Get a list of unique objects for that participant
@@ -205,6 +205,14 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
 
   # Extract behav_name columns from data
   raw_behav <- extract_behavs(raw_data, behav_name, partial_matching)
+
+  if (str_detect(behav_name, "parentnoun")) {
+    referent_data <- extract_behavs(raw_data, "lookingATobj", partial_matching) %>%
+      select(time, label, referent1, referent2)
+
+    raw_behav <- left_join(raw_behav, referent_data, by = c("time", "label")) %>%
+      select(-label)
+  }
 
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
                          frame_n = row_number(),
