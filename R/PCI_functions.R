@@ -391,6 +391,13 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
   return(overlapping_df)
 }
 
+# Add the stats to the data_out variable
+add_stats <- function(data_in, sig.digits = 3) {
+
+
+}
+
+
 # Process looks ----
 
 process_look_events <- function(data_in, suffix = NULL) {
