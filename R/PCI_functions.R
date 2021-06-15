@@ -378,6 +378,7 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
       transmute(behav_name = out_behav_name,
                 onset = max(onset.1, onset.2),
                 offset = min(offset.1, offset.2),
+                duration = offset - onset,
                 which_first = case_when(onset2_in_ev1 ~ ev1_first,
                                         onset1_in_ev2 ~ ev2_first))
   } else {
@@ -385,6 +386,7 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
       behav_name = character(),
       onset = numeric(),
       offset = numeric(),
+      duration = numeric(),
       which_first = character())
   }
 
