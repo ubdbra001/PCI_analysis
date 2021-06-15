@@ -328,3 +328,10 @@ extend_event_overlaps <- function(behav_df_in, overlapping_events) {
 
   return(behav_df_out)
 }
+
+
+find_overlapping_events <- function(df_in, behav_name1, behav_name2,
+                                    out_behav_name = "overlapping_events",
+                                    ev1_first = NULL, ev2_first = NULL){
+
+}
