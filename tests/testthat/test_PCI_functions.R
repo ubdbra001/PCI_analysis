@@ -1691,5 +1691,26 @@ test_that("Events encompassed by another event correctly detected", {
 
 # 14 Test add_stats function ----
 
+# 15 Test add_behav_name_suffix function ----
 
+# 15.1
+test_that("Suffix added",{
+  test_behav_data <- tibble(
+    behav_name = c("behav1", "behav2"),
+    onset = c(2.6, 10.4),
+    offset = c(6.3, 16.1),
+    duration = offset - onset
+  )
 
+  expected_output <- tibble(
+    behav_name = c("behav1_test", "behav2_test"),
+    onset = c(2.6, 10.4),
+    offset = c(6.3, 16.1),
+    duration = offset - onset
+  )
+
+  expect_equivalent(
+    add_behav_name_suffix(test_behav_data, suffix = "test"),
+    expected_output
+  )
+})
