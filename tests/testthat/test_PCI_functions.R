@@ -1424,7 +1424,84 @@ test_that("Multiple target events extended to encompass multiple overlapped even
 
 # 12 Test remove_overlapping_events function ----
 
+# 12.1
+test_that("Overlapping event removed", {
 
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav2", "behav2"),
+    onset = c(2.5, 6.2, 12.7),
+    offset = c(6.7, 7.8, 16.6)
+  )
+
+  comparator_event <- "behav1"
+  target_event <- "behav2"
+
+  expected_output <- tibble(
+    event_ID = c(2, 3),
+    behav_name = c("behav2", "behav2"),
+    onset = c(6.2, 12.7),
+    offset = c(7.8, 16.6)
+  )
+
+  expect_equivalent(
+    remove_overlapping_events(target_event, comparator_event, test_behav_data),
+    expected_output
+  )
+
+})
+
+# 12.2
+test_that("Non-overlapping event not affected", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav2", "behav2"),
+    onset = c(2.5, 6.2, 12.7),
+    offset = c(5.7, 7.8, 16.6)
+  )
+
+  comparator_event <- "behav1"
+  target_event <- "behav2"
+
+  expected_output <- test_behav_data
+
+  expect_equivalent(
+    remove_overlapping_events(target_event, comparator_event, test_behav_data),
+    expected_output
+  )
+
+})
+
+# 12.3
+test_that("When event flag set overlapping event removed and overlapped event extended", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3),
+    behav_name = c("behav1", "behav2", "behav2"),
+    onset = c(2.5, 6.2, 12.7),
+    offset = c(6.7, 7.8, 16.6)
+  )
+
+  comparator_event <- "behav1"
+  target_event <- "behav2"
+
+  expected_output <- tibble(
+    event_ID = c(2, 3),
+    behav_name = c("behav2", "behav2"),
+    onset = c(2.5, 12.7),
+    offset = c(7.8, 16.6),
+    duration = offset - onset,
+  )
+
+  expect_equivalent(
+    remove_overlapping_events(target_event, comparator_event, test_behav_data,
+                              extend = TRUE),
+    expected_output
+  )
+
+
+})
 
 # 13 Test find_overlapping_events function ----
 
