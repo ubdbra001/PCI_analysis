@@ -393,8 +393,28 @@ find_overlapping_events <- function(df_in, behav_name1, behav_name2,
   return(overlapping_df)
 }
 
+# Summarise event functions ----
+
 # Add the stats to the data_out variable
-add_stats <- function(data_in, sig.digits = 3) {
+summarise_events <- function(data_in, sig.digits = 3, suffix = NULL) {
+
+  data_summary <- group_by(data_in, behav_name) %>%
+    summarise(.duration = sum(duration), # Total event time
+              .mean = mean(duration), # Mean event time
+              .sd = sd(duration), # SD of event time
+              .median = median(duration), # Median of event time
+              .IQR = IQR(duration, na.rm = T), # IQR of event time
+              .num = if_else(is.na(.mean), NA_integer_, n()), # How many events
+              .groups = "drop") %>%
+    mutate(across(starts_with("."), round, digits = sig.digits))
+
+  if (!is.null(suffix)){
+    data_summary <- add_behav_name_suffix(data_summary, suffix)
+  }
+
+  return(data_summary)
+
+}
 
 add_behav_name_suffix <- function(data_in, suffix) {
   data_out <- mutate(data_in,
