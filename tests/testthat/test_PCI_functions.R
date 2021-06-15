@@ -953,7 +953,6 @@ test_that("Single behav selected",{
     duration = offset - onset,
     obj = c("spoon", "knife", "knife", "fork"),
     event_ordinal = c(1, 1, 3, 2),
-    label = NA_character_,
     referent1 = NA_character_,
     referent2 = NA_character_)
 
@@ -978,7 +977,6 @@ test_that("Nothing returned when selected behav not present",{
     duration = numeric(),
     obj = character(),
     event_ordinal = numeric(),
-    label = character(),
     referent1 = character(),
     referent2 = character())
 
@@ -1003,7 +1001,6 @@ test_that("Suffix added to variable names",{
     duration.test = offset.test - onset.test,
     obj.test = c("spoon", "knife", "knife", "fork"),
     event_ordinal.test = c(1, 1, 3, 2),
-    label.test = NA_character_,
     referent1.test = NA_character_,
     referent2.test = NA_character_)
 
