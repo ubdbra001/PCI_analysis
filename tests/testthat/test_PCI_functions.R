@@ -1421,9 +1421,14 @@ test_that("Multiple target events extended to encompass multiple overlapped even
 
 })
 
-# 12 Test find_overlapping_events function ----
 
-# 12.1
+# 12 Test remove_overlapping_events function ----
+
+
+
+# 13 Test find_overlapping_events function ----
+
+# 13.1
 test_that("Empty tibble returned when no overlaps found", {
 
   test_behav_data <- tibble(
@@ -1449,7 +1454,7 @@ test_that("Empty tibble returned when no overlaps found", {
   )
 })
 
-# 12.2
+# 13.2
 test_that("Single overlapping event found", {
 
   test_behav_data <- tibble(
@@ -1475,7 +1480,7 @@ test_that("Single overlapping event found", {
   )
 })
 
-# 12.3
+# 13.3
 test_that("Multiple overlapping events found", {
 
   test_behav_data <- tibble(
@@ -1501,7 +1506,7 @@ test_that("Multiple overlapping events found", {
   )
 })
 
-# 12.4
+# 13.4
 test_that("Unrelated event ignored", {
 
   test_behav_data <- tibble(
@@ -1527,7 +1532,7 @@ test_that("Unrelated event ignored", {
   )
 })
 
-# 12.4
+# 13.5
 test_that("Custom behav_name for output works", {
 
   test_behav_data <- tibble(
@@ -1554,8 +1559,7 @@ test_that("Custom behav_name for output works", {
   )
 })
 
-
-# 12.4
+# 13.6
 test_that("Custom which_first_name parameter works correctly", {
 
   test_behav_data <- tibble(
@@ -1581,3 +1585,30 @@ test_that("Custom which_first_name parameter works correctly", {
     expected_output
   )
 })
+
+# 13.7
+test_that("Events encompassed by another event correctly detected", {
+
+  test_behav_data <- tibble(
+    event_ID = c(1, 2, 3, 4, 5),
+    behav_name = c("behav1", "behav1", "behav1", "behav2", "behav2"),
+    onset = c(2.5, 6.0, 16.3, 4.2, 12.7),
+    offset = c(5.7, 7.0, 19.2, 7.8, 16.6)
+  )
+
+  behav_name1 <- "behav1"
+  behav_name2 <- "behav2"
+
+  expected_output <- tibble(
+    behav_name = "overlapping_events",
+    onset = c(4.2, 6.0, 16.3),
+    offset = c(5.7, 7.0, 16.6),
+    which_first = c("behav1_first", "behav2_first", "behav2_first")
+  )
+
+  expect_equivalent(
+    find_overlapping_events(test_behav_data, behav_name1, behav_name2),
+    expected_output
+  )
+})
+
