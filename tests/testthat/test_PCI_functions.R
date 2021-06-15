@@ -1698,8 +1698,135 @@ test_that("Events encompassed by another event correctly detected", {
 
 # 14 Test summarise_events function ----
 
+# 14.1
+test_that("Stats correctly calculared for single event type", {
 
+  test_behav_data <- tibble(
+    behav_name = "behav_name",
+    onset = c(1, 13, 25, 37),
+    offset = c(2, 16, 27, 40),
+    duration = offset - onset
+  )
 
+  expected_output <- tibble(
+    behav_name = "behav_name",
+    .duration = 9,
+    .mean = 2.25,
+    .sd = 0.957,
+    .median = 2.5,
+    .IQR = 1.25,
+    .num = 4
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data),
+    expected_output
+  )
+})
+
+# 14.2
+test_that("Nothing returned for when no events entered", {
+
+  test_behav_data <- tibble(
+    behav_name = character(),
+    onset = numeric(),
+    offset = numeric(),
+    duration = numeric()
+  )
+
+  expected_output <- tibble(
+    behav_name = character(),
+    .duration = numeric(),
+    .mean = numeric(),
+    .sd = numeric(),
+    .median = numeric(),
+    .IQR = numeric(),
+    .num = numeric()
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data),
+    expected_output
+  )
+})
+
+# 14.3
+test_that("Stats correctly calculared for multiple event types", {
+
+  test_behav_data <- tibble(
+    behav_name = c(rep("behav_name1", 4), rep("behav_name2", 2)),
+    onset = c(1, 13, 25, 37, 24, 57),
+    offset = c(2, 16, 27, 40, 26, 59),
+    duration = offset - onset
+  )
+
+  expected_output <- tibble(
+    behav_name = c("behav_name1", "behav_name2"),
+    .duration = c(9, 4),
+    .mean = c(2.25, 2),
+    .sd = c(0.957, 0),
+    .median = c(2.5, 2),
+    .IQR = c(1.25, 0),
+    .num = c(4, 2)
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data),
+    expected_output
+  )
+})
+
+# 14.4
+test_that("Events with NAs correctly proccessed ", {
+
+  test_behav_data <- tibble(
+    behav_name = c(rep("behav_name1", 4), rep("behav_name2", 2), "behav3"),
+    onset = c(1, 13, 25, 37, 24, 57, NA),
+    offset = c(2, 16, 27, 40, 26, 59, NA),
+    duration = offset - onset
+  )
+
+  expected_output <- tibble(
+    behav_name = c("behav_name1", "behav_name2", "behav3"),
+    .duration = c(9, 4, NA),
+    .mean = c(2.25, 2, NA),
+    .sd = c(0.957, 0, NA),
+    .median = c(2.5, 2, NA),
+    .IQR = c(1.25, 0, NA),
+    .num = c(4, 2, NA)
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data),
+    expected_output
+  )
+})
+
+# 14.5
+test_that("Sig digit argument works correctly", {
+
+  test_behav_data <- tibble(
+    behav_name = c(rep("behav_name1", 4), rep("behav_name2", 2)),
+    onset = c(1, 13, 25, 37, 24, 57),
+    offset = c(2, 16, 27, 40, 26, 59),
+    duration = offset - onset
+  )
+
+  expected_output <- tibble(
+    behav_name = c("behav_name1", "behav_name2"),
+    .duration = c(9, 4),
+    .mean = c(2.2, 2),
+    .sd = c(1.0, 0),
+    .median = c(2.5, 2),
+    .IQR = c(1.2, 0),
+    .num = c(4, 2)
+  )
+
+  expect_equivalent(
+    summarise_events(test_behav_data, sig.digits = 1),
+    expected_output
+  )
+})
 
 # 15 Test add_behav_name_suffix function ----
 
