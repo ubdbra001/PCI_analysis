@@ -330,6 +330,12 @@ extend_event_overlaps <- function(behav_df_in, overlapping_events) {
 }
 
 
+remove_overlapping_events <- function(target_event, comparator_event,
+                                      behav_df_in, extend = FALSE){
+
+
+}
+
 find_overlapping_events <- function(df_in, behav_name1, behav_name2,
                                     out_behav_name = "overlapping_events",
                                     which_first_names = NULL){
