@@ -210,8 +210,8 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
     referent_data <- extract_behavs(raw_data, "lookingATobj", partial_matching) %>%
       select(time, label, referent1, referent2)
 
-    raw_behav <- left_join(raw_behav, referent_data, by = c("time", "label")) %>%
-      select(-label)
+    raw_behav <- left_join(raw_behav, referent_data, by = c("time", "label"))# %>%
+      #select(-label)
   }
 
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
