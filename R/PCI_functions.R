@@ -440,3 +440,89 @@ process_look_events <- function(data_in, suffix = NULL) {
 }
 
 
+
+find_naming_overlap <- function(comp_event, target_event, data_in ) {
+
+  # This function takes in a data frame with behav events and returns a data
+  # frame with at least all naming events once
+  #
+  # Should find overlaps between naming events and handling/looking events and
+  # give details about the overlap
+  #
+  # If no overlaps exist then the naming event should still be returned but
+  # not including overlap details (So we can calc the number of naming events
+  # with and without overlapping events)
+
+  if (str_detect(comp_event, "baby")) {
+    actor <- "baby"
+  } else if (str_detect(comp_event, "parent")){
+    actor <- "parent"
+  }
+
+  if (str_detect(comp_event, "ATobj")){
+    event <- "looking"
+  } else if (str_detect(comp_event, "obj")) {
+    event <- "handling"
+  }
+
+  # Pretty fragile
+  if (str_detect(target_event, "windowed")){
+    suffix <- "windowed"
+  } else {
+    suffix <- NULL
+  }
+
+  out_behav_name <- str_c("naming", suffix, actor, event, sep = "_")
+
+  # Start by pulling all the target events (i.e. naming)
+  overlapping_events <- find_overlaps(target_event, comp_event, data_in) %>%
+    filter(onset1_in_ev2 | offset1_in_ev2 | onset2_in_ev1 | offset2_in_ev1)
+
+  if (nrow(overlapping_events) > 0){
+    overlapping_df <- rowwise(overlapping_events) %>%
+      transmute(event_ID = event_ID.1,
+                ordinal = ordinal.1,
+                behav_name = out_behav_name,
+                actor = actor,
+                event = event,
+                naming_onset = onset.1,
+                naming_offset = offset.1,
+                label = label.1,
+                referent1 = referent1.1,
+                referent2 = referent2.1,
+                look_obj1 = referent1.2,
+                look_obj2 = referent2.2,
+                held_obj = obj.2,
+                overlap_onset = max(onset.1, onset.2),
+                overlap_offset = min(offset.1, offset.2),
+                overlap_duration = overlap_offset - overlap_onset,
+                which_first = case_when(onset2_in_ev1 ~ target_event,
+                                        onset1_in_ev2 ~ actor))
+
+    if (event == "handling") {
+      overlapping_df <- mutate(
+        overlapping_df,
+        obj_match = if_else(referent1 == held_obj | referent2 == held_obj,
+                            TRUE, FALSE)
+        )
+
+    } else if (event == "looking") {
+      overlapping_df <- mutate(
+        overlapping_df,
+        obj_match = if_else(
+          referent1 == look_obj1 | referent2 == look_obj1 |
+            ((referent2 == look_obj1 | referent2 == look_obj2) &
+               referent2 != "."),
+          TRUE, FALSE)
+        )
+    }
+  # Extract overlap info
+  # Repeat for each comparator event
+  }
+
+  return(overlapping_df)
+
+
+  # target events with no overlaps in any category should be added back in to
+  # the final data frame
+}
