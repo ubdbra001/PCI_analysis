@@ -526,3 +526,30 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
   # target events with no overlaps in any category should be added back in to
   # the final data frame
 }
+
+
+process_naming_events <- function(target_event = "parentnoun", comp_events, data_in) {
+
+  overlapping_events <- map_df(comp_events, find_naming_overlap,
+                               target_event = target_event, data_in = data_in)
+
+  overlaps_count_all <- count_naming_overlaps(overlapping_events)
+
+  overlaps_count_match <- filter(overlapping_events, obj_match) %>%
+    count_naming_overlaps(suffix = "matching")
+
+  naming_events <- select_behav(data_in, target_event) %>%
+    select(event_ID, ordinal,  label, referent1, referent2)
+
+  all_naming_events <- left_join(naming_events,
+                                 overlaps_count_all,
+                                 by = "event_ID")
+  all_naming_events <- left_join(all_naming_events,
+                                 overlaps_count_match,
+                                 by = "event_ID")
+  all_naming_events <- mutate(
+    all_naming_events,
+    across(.cols = -event_ID, ~ replace_na(.x, 0))
+  )
+
+  return(all_naming_events)
