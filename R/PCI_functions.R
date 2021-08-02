@@ -574,3 +574,47 @@ count_naming_overlaps <- function(data_in, suffix = NULL) {
 
   return(data_summary)
 }
+
+
+window_behav <- function(data_in, behav_name, time_window) {
+
+  # Select a specific event and adjust the onset and offset by the time_window
+  # provided. Return original data frame with windowed event appended.
+
+
+  # Check to make sure that the values provided in the time_window argument make
+  # sense
+  if (!is.numeric(time_window)) {
+    stop("time_window should be numeric values")
+  } else if (any(time_window < 0)) {
+    stop("time_window contains negative values, please use positive values only")
+  } else if (length(time_window) > 2) {
+    stop("time_window contains incorrect number of values, please use either 1 or 2")
+  } else if (length(time_window) == 2) {
+    # If there are 2 values then seperate them out
+    onset_adj <- time_window[1]
+    offset_adj <- time_window[2]
+  } else {
+    # If there is only a single value then use it for both sides of the window
+    onset_adj <- time_window
+    offset_adj <- time_window
+  }
+
+  last_event <- max(data_in$event_ID)
+
+  # Select the specific behavior to be windowed
+  selected_behav <- select_behav(data_in, behav_name)
+
+  # Window behaviour and give new events new IDs
+  windowed_behav <- mutate(selected_behav,
+                           onset = if_else(onset - onset_adj > 0,
+                                           onset - onset_adj, 0),
+                           offset = offset + offset_adj,
+                           event_ID = row_number() + last_event) %>%
+    # Adjust behav_name to show it is windowed
+    add_behav_name_suffix("windowed")
+
+  # Add it back into the original data frame
+  data_out <- bind_rows(data_in, windowed_behav)
+
+  return(data_out)
