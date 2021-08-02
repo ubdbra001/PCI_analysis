@@ -472,12 +472,14 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
   # not including overlap details (So we can calc the number of naming events
   # with and without overlapping events)
 
+  # Determine who the actor is
   if (str_detect(comp_event, "baby")) {
     actor <- "baby"
   } else if (str_detect(comp_event, "parent")){
     actor <- "parent"
   }
 
+  # Determine what the event type is
   if (str_detect(comp_event, "ATobj")){
     event <- "looking"
   } else if (str_detect(comp_event, "obj")) {
@@ -491,6 +493,7 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
     suffix <- NULL
   }
 
+  # Generate behav_name for the output of this function
   out_behav_name <- str_c("naming", suffix, actor, event, sep = "_")
 
   # Start by pulling all the target events (i.e. naming)
@@ -549,23 +552,33 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
 
 process_naming_events <- function(target_event = "parentnoun", comp_events, data_in) {
 
+  # Take target_event, and comparator events. Find overlaps and extract info
+  # about them. Including detailed events, counts per event types, summary of
+  # events.
+
+  # Get all the overlapping events
   overlapping_events <- map_df(comp_events, find_naming_overlap,
                                target_event = target_event, data_in = data_in)
 
+  # Count the overlapping event types (regardless of whether they match)
   overlaps_count_all <- count_naming_overlaps(overlapping_events)
 
+  # Count the overlapping event types (only if they match)
   overlaps_count_match <- filter(overlapping_events, obj_match) %>%
     count_naming_overlaps(suffix = "matching")
 
+  # Get all of the naming events
   naming_events <- select_behav(data_in, target_event) %>%
-    select(event_ID, ordinal,  label, referent1, referent2)
+    select(event_ID, ordinal, label, referent1, referent2)
 
+  # Join the data frames
   all_naming_events <- left_join(naming_events,
                                  overlaps_count_all,
                                  by = "event_ID")
   all_naming_events <- left_join(all_naming_events,
                                  overlaps_count_match,
                                  by = "event_ID")
+  # Replace NAs with zeros
   all_naming_events <- mutate(
     all_naming_events,
     across(.cols = -event_ID, ~ replace_na(.x, 0))
