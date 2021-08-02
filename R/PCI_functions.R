@@ -553,3 +553,24 @@ process_naming_events <- function(target_event = "parentnoun", comp_events, data
   )
 
   return(all_naming_events)
+}
+
+count_naming_overlaps <- function(data_in, suffix = NULL) {
+
+  data_group <- group_by(data_in, event_ID)
+
+  data_summary <- summarise(
+    data_group,
+    baby_handle = sum(actor == "baby" & event == "handling"),
+    baby_look = sum(actor == "baby" & event == "looking"),
+    parent_handle = sum(actor == "parent" & event == "handling"),
+    parent_look = sum(actor == "parent" & event == "looking")
+  )
+
+  if (!is.null(suffix)) {
+    data_summary <- rename_with(.data = data_summary, .f = str_c,
+                                .cols = -event_ID, suffix, sep = "_")
+  }
+
+  return(data_summary)
+}
