@@ -500,50 +500,49 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
   overlapping_events <- find_overlaps(target_event, comp_event, data_in) %>%
     filter(onset1_in_ev2 | offset1_in_ev2 | onset2_in_ev1 | offset2_in_ev1)
 
-  if (nrow(overlapping_events) > 0){
-    overlapping_df <- rowwise(overlapping_events) %>%
-      transmute(event_ID = event_ID.1,
-                ordinal = ordinal.1,
-                behav_name = out_behav_name,
-                actor = actor,
-                event = event,
-                naming_onset = onset.1,
-                naming_offset = offset.1,
-                label = label.1,
-                referent1 = referent1.1,
-                referent2 = referent2.1,
-                look_obj1 = referent1.2,
-                look_obj2 = referent2.2,
-                held_obj = obj.2,
-                overlap_onset = max(onset.1, onset.2),
-                overlap_offset = min(offset.1, offset.2),
-                overlap_duration = overlap_offset - overlap_onset,
-                which_first = case_when(onset2_in_ev1 ~ target_event,
-                                        onset1_in_ev2 ~ actor))
+  # if there aren't any overlapping events then exit early
+  if (nrow(overlapping_events) < 1){
+    # Need to work out what to return here
+  }
 
-    if (event == "handling") {
-      overlapping_df <- mutate(
-        overlapping_df,
-        obj_match = if_else(referent1 == held_obj | referent2 == held_obj,
-                            TRUE, FALSE)
-        )
+  overlapping_df <- rowwise(overlapping_events) %>%
+    transmute(event_ID = event_ID.1,
+              ordinal = ordinal.1,
+              behav_name = out_behav_name,
+              actor = actor,
+              event = event,
+              naming_onset = onset.1,
+              naming_offset = offset.1,
+              label = label.1,
+              referent1 = referent1.1,
+              referent2 = referent2.1,
+              look_obj1 = referent1.2,
+              look_obj2 = referent2.2,
+              held_obj = obj.2,
+              overlap_onset = max(onset.1, onset.2),
+              overlap_offset = min(offset.1, offset.2),
+              overlap_duration = overlap_offset - overlap_onset,
+              which_first = case_when(onset2_in_ev1 ~ target_event,
+                                      onset1_in_ev2 ~ actor))
 
-    } else if (event == "looking") {
-      overlapping_df <- mutate(
-        overlapping_df,
-        obj_match = if_else(
-          referent1 == look_obj1 | referent2 == look_obj1 |
-            ((referent2 == look_obj1 | referent2 == look_obj2) &
-               referent2 != "."),
-          TRUE, FALSE)
-        )
-    }
+  if (event == "handling") {
+    overlapping_df <- mutate(
+      overlapping_df,
+      obj_match = if_else(referent1 == held_obj | referent2 == held_obj,
+                          TRUE, FALSE))
+
+  } else if (event == "looking") {
+    overlapping_df <- mutate(
+      overlapping_df,
+      obj_match = if_else(referent1 == look_obj1 | referent2 == look_obj1 |
+                            ((referent2 == look_obj1 | referent2 == look_obj2) &
+                               referent2 != "."),
+        TRUE, FALSE))
   # Extract overlap info
   # Repeat for each comparator event
   }
 
   return(overlapping_df)
-
 
   # target events with no overlaps in any category should be added back in to
   # the final data frame
