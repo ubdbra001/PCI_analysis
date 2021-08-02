@@ -196,7 +196,7 @@ convert_events_to_objs <- function(input_df) {
 
 }
 
-parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
+  parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
                                remove_ambig = F, frame_gap = 2) {
 
   # Takes raw data and parses selected behavioral events from it
@@ -205,14 +205,6 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
 
   # Extract behav_name columns from data
   raw_behav <- extract_behavs(raw_data, behav_name, partial_matching)
-
-  if (str_detect(behav_name, "parentnoun")) {
-    referent_data <- extract_behavs(raw_data, "lookingATobj", partial_matching) %>%
-      select(time, label, referent1, referent2)
-
-    raw_behav <- left_join(raw_behav, referent_data, by = c("time", "label"))# %>%
-      #select(-label)
-  }
 
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
                          frame_n = row_number(),
@@ -227,19 +219,45 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
 
     return(behav_events)
 
-  } else {
-    # Group and summarise data into individual events
-    # summarise not used as non-named columns are dropped
-
-    grouped_events <- group_by(behav_events, ordinal)
-
-    grouped_events <- mutate(grouped_events,
-                             first_frame = min(frame_n),
-                             last_frame = max(frame_n)) %>%
-      filter(frame_n == first_frame)
-
-    behav_events <- ungroup(grouped_events)
   }
+  # Group and summarise data into individual events
+  # summarise not used as non-named columns are dropped
+
+  grouped_events <- group_by(behav_events, ordinal)
+
+  grouped_events <- mutate(grouped_events,
+                           first_frame = min(frame_n),
+                           last_frame = max(frame_n)) %>%
+    filter(frame_n == first_frame)
+
+  behav_events <- ungroup(grouped_events)
+
+
+  # By default referent events are missing from parentnoun variable, if they are
+  # missing this recovers the referents from the raw data and appends them to
+  # the correct behavioural event
+  if (str_detect(behav_name, "parentnoun") &
+      any(!"referent" %in% colnames(raw_behav))) {
+
+    # Extract lookingATobj variable where referent data can be found
+    referent_data <- extract_behavs(raw_data, "lookingATobj", partial_matching) %>%
+      drop_na()
+
+    # Extract referent events
+    referent_events <- group_by(referent_data, ordinal) %>%
+      summarise(label = first(label),
+                ordinal = first(ordinal),
+                referent1 = first(referent1),
+                referent2 = first(referent2),
+                .groups = "drop")
+
+    # Join referent_events dataframe to behav_events dataframe by ordinal and
+    # label to ensure correct referents end up associated with correct behav
+    # events
+    behav_events <- left_join(behav_events, referent_events,
+                              by = c("ordinal", "label"))
+  }
+
 
   # Optional event proccessing
   # Remove abiguous events
@@ -265,6 +283,8 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
     #
     # Could modify convert_events_to_objs so merging done here, but would need
     # to account for different variable names (label/obj) in merge_events
+    #
+    # Do we need to include parentnoun events?
     behav_events <- merge_events(behav_events,
                                  frame_gap = frame_gap,
                                  behav_name)
@@ -274,7 +294,6 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   behav_events <- format_events(behav_events)
 
   return(behav_events)
-
 }
 
 # Finding and processing overlap functions ----
@@ -618,3 +637,4 @@ window_behav <- function(data_in, behav_name, time_window) {
   data_out <- bind_rows(data_in, windowed_behav)
 
   return(data_out)
+}
