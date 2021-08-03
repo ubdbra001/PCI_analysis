@@ -376,50 +376,6 @@ remove_overlapping_events <- function(target_ev_name, comparator_ev_name,
 
 }
 
-find_overlapping_events <- function(df_in, behav_name1, behav_name2,
-                                    out_behav_name = "overlapping_events",
-                                    which_first_names = NULL){
-
-  # If first event names not given then set them to be the behav_name with the
-  # suffix "_first"
-  if (is.null(which_first_names) | length(which_first_names) != 2) {
-    ev1_first = str_c(behav_name1, "first", sep = "_")
-    ev2_first = str_c(behav_name2, "first", sep = "_")
-  } else {
-    ev1_first = str_c(which_first_names[1], "first", sep = "_")
-    ev2_first = str_c(which_first_names[2], "first", sep = "_")
-  }
-
-  # Find overlapping events
-  crossed_events <- find_overlaps(behav_name1, behav_name2, df_in)
-
-  # Only select events with overlap
-  overlapping_events <- mutate(crossed_events, event_overlap =
-             onset1_in_ev2 | offset1_in_ev2 |
-             onset2_in_ev1 | offset2_in_ev1) %>%
-    filter(event_overlap)
-
-  if (nrow(overlapping_events)>0){
-    # Find Which event came first in the overlap
-    overlapping_df <- rowwise(overlapping_events) %>%
-      transmute(behav_name = out_behav_name,
-                onset = max(onset.1, onset.2),
-                offset = min(offset.1, offset.2),
-                duration = offset - onset,
-                which_first = case_when(onset2_in_ev1 ~ ev1_first,
-                                        onset1_in_ev2 ~ ev2_first))
-  } else {
-    overlapping_df <- tibble(
-      behav_name = character(),
-      onset = numeric(),
-      offset = numeric(),
-      duration = numeric(),
-      which_first = character())
-  }
-
-  return(overlapping_df)
-}
-
 # Summarise event functions ----
 
 # Add the stats to the data_out variable
