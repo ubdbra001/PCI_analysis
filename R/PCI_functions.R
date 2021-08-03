@@ -453,7 +453,46 @@ add_behav_name_suffix <- function(data_in, suffix) {
 
 # Process looks ----
 
-process_look_events <- function(data_in, suffix = NULL) {
+process_mutual_looks <- function(data_in, behav_name1, behav_name2) {
+
+  # Function just for processing mutual looks.
+  # Takes behav events dataframe in, along with two behav_names
+  # Overlaps all events and returns any overlapping event
+
+  out_behav_name <- "mutual_looks"
+
+  # Find overlapping events
+  crossed_events <- find_overlaps(behav_name1, behav_name2, data_in)
+
+  # Only select events with overlap
+  overlapping_events <- mutate(crossed_events, event_overlap =
+                                 onset1_in_ev2 | offset1_in_ev2 |
+                                 onset2_in_ev1 | offset2_in_ev1) %>%
+    filter(event_overlap)
+
+  # Early exit if Number of events is less than 1
+  if (nrow(overlapping_events)<1){
+
+    overlapping_df <- tibble(
+      behav_name = character(),
+      onset = numeric(),
+      offset = numeric(),
+      duration = numeric(),
+      which_first = character())
+
+    return(overlapping_df)
+  }
+
+  # Find Which event came first in the overlap
+  overlapping_df <- rowwise(overlapping_events) %>%
+    transmute(behav_name = out_behav_name,
+              onset = max(onset.1, onset.2),
+              offset = min(offset.1, offset.2),
+              duration = offset - onset,
+              which_first = case_when(onset2_in_ev1 ~ behav_name1,
+                                      onset1_in_ev2 ~ behav_name2))
+
+  return(overlapping_df)
 
 
 }
