@@ -196,7 +196,7 @@ convert_events_to_objs <- function(input_df) {
 
 }
 
-  parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
+parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
                                remove_ambig = F, frame_gap = 2) {
 
   # Takes raw data and parses selected behavioral events from it
@@ -206,23 +206,23 @@ convert_events_to_objs <- function(input_df) {
   # Extract behav_name columns from data
   raw_behav <- extract_behavs(raw_data, behav_name, partial_matching)
 
+  # Removes NAs from raw data to show if there are any behav_events to convert
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
                          frame_n = row_number(),
                          behav_name = behav_name) %>%
     na.omit() # Remove NAs = include all events, certain and ambiguous
 
+  # If there are no events: set all values as NAs, format as usual and
+  # return early.
   if (nrow(behav_events) == 0) {
-    # If there are no events: set all values as NAs, format as usual and
-    # return early.
     behav_events <- add_row(behav_events, behav_name = behav_name) %>%
       format_events()
 
     return(behav_events)
-
   }
+
   # Group and summarise data into individual events
   # summarise not used as non-named columns are dropped
-
   grouped_events <- group_by(behav_events, ordinal)
 
   grouped_events <- mutate(grouped_events,
