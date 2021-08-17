@@ -30,7 +30,9 @@ behav_names <- c(
   "parentobj",
   "parentnoun",
   "babyATobj",
-  "parentATobj"
-  )
+  "parentATobj")
 
 partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
+
+comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
+target_event <- "parentnoun"
