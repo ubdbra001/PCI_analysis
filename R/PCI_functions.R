@@ -406,6 +406,22 @@ add_behav_name_suffix <- function(data_in, suffix) {
   return(data_out)
 }
 
+add_summary_stats <- function(individual_summary_stats, all_summary_stats,
+                              participant_id) {
+
+  wide_summary_stats <- individual_summary_stats %>%
+    pivot_wider(
+      names_from = behav_name,
+      values_from = colnames(event_summary_stats)[-1],
+      names_glue = "{behav_name}{.value}") %>%
+    add_column(PartID = participant_id, .before = 1)
+
+
+  all_summary_stats <- bind_rows(all_summary_stats, wide_summary_stats)
+
+  return(all_summary_stats)
+}
+
 
 # Process looks ----
 
