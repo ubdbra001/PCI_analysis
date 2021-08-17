@@ -560,26 +560,18 @@ find_naming_overlap <- function(comp_event, target_event, data_in ) {
 }
 
 
-process_naming_events <- function(target_event = "parentnoun", comp_events, data_in) {
+count_naming_overlaps <- function(target_event = "parentnoun", data_in, naming_events) {
 
   # Take target_event, and comparator events. Find overlaps and extract info
   # about them. Including detailed events, counts per event types, summary of
   # events.
 
-  # Get all the overlapping events
-  overlapping_events <- map_df(comp_events, find_naming_overlap,
-                               target_event = target_event, data_in = data_in)
-
   # Count the overlapping event types (regardless of whether they match)
-  overlaps_count_all <- count_naming_overlaps(overlapping_events)
+  overlaps_count_all <- count_overlaps(overlapping_events)
 
   # Count the overlapping event types (only if they match)
-  overlaps_count_match <- filter(overlapping_events, obj_match) %>%
-    count_naming_overlaps(suffix = "matching")
-
-  # Get all of the naming events
-  naming_events <- select_behav(data_in, target_event) %>%
-    select(event_ID, ordinal, label, referent1, referent2)
+  overlaps_count_match <- filter(data_in, obj_match) %>%
+    count_overlaps(suffix = "matching")
 
   # Join the data frames
   all_naming_events <- left_join(naming_events,
@@ -597,7 +589,7 @@ process_naming_events <- function(target_event = "parentnoun", comp_events, data
   return(all_naming_events)
 }
 
-count_naming_overlaps <- function(data_in, suffix = NULL) {
+count_overlaps <- function(data_in, suffix = NULL) {
 
   data_group <- group_by(data_in, event_ID)
 
