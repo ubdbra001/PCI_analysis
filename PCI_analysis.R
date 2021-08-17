@@ -1,20 +1,8 @@
 # Load custom functions & libraries ####
 source("R/PCI_functions.R")
 
-# Set up variables ####
-
-# Should we ignore events marked as ambiguous
-remove_ambiguous <- TRUE
-
-# Size of gap for merging data
-frame_gap <- 2
-
-# Data input and output
-raw_data_path <- "data"
-proc_data_path <- "."
-
-input_pattern <- ".*.csv"
-output_file_name <- "PCIsummary"
+# Load user defined variables ####
+source("PCI_uservars.R")
 
 # Generate output filename
 if (remove_ambiguous) {
@@ -23,15 +11,8 @@ if (remove_ambiguous) {
   output_file <- sprintf("%s_inAmbg.csv", output_file_name)
 }
 
-data_col_def <- "ddddcdddcdddcdddccdddccdddcccccdddcdddcdddcccccdddcdddcdddcdddcdddcdddcdddcccccdddccccdddccccdddc"
 
-# Variables for data extraction
-behav_names <- c("PCIduration", "bookreading","offCameras",
-                 "babyATparentface", "parentATbabyface",
-                 "babyobj", "parentobj", "parentnoun",
-                 "babyATobj", "parentATobj")
 
-partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
 
 # Body of Script ----
 
