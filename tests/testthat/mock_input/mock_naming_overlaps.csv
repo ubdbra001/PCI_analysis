@@ -1,0 +1,5 @@
+overlap_ID,event__ID,behav_name,naming_onset,naming_offset,referent1,referent2,target_event_name,look_obj1,look_obj2,held_obj,obj_match,overlap_onset,overlap_offset,overlap_duration,which_first
+1,1,name_look_baby,1.98,2.26,baby,.,babyATobj,baby,.,NA,1,2.12,2.26,0.14,name
+2,2,name_look_baby,4.28,4.71,baby,.,babyATobj,cup,.,NA,0,4.51,4.71,0.2,name
+3,3,name_look_baby,5.81,6.22,baby,cup,babyATobj,cup,teapot,NA,1,5.81,5.96,0.15,baby
+4,4,name_look_baby,7.6,7.97,baby,.,NA,NA,NA,NA,NA,NA,NA,NA,NA
