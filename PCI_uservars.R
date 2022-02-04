@@ -15,7 +15,7 @@ frame_gap <- 2
 raw_data_path <- "data/raw_data"
 proc_data_path <- "." # Not sure what this does?
 
-input_pattern <- ".*.csv"
+input_pattern <- ".*.tsv"
 output_file_name <- "PCIsummary"
 
 data_col_def <- cols(
