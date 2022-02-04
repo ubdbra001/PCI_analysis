@@ -1,9 +1,7 @@
 
 # Load libraries ----
 library(dplyr)
-library(readr)
-library(stringr)
-library(purrr)
+library(tidyverse)
 
 between <- data.table::between
 
@@ -22,16 +20,16 @@ merge_events <- function(events_df, frame_gap, behav_name = NULL) {
   # Make sure df is not grouped before processing further
   if (is_grouped_df(events_df)) events_df <- ungroup(events_df)
 
-  if (is.null(behav_name)){
+  if (is.null(behav_name)) {
     col_select <- NULL
   } else if (str_detect(behav_name, "AT(parent|baby)")) {
     col_select <- NULL
-  } else if (str_detect(behav_name, "(parent|baby)obj")){
+  } else if (str_detect(behav_name, "(parent|baby)obj")) {
     col_select <- "obj"
   } else if (str_detect(behav_name, "ATobj")) {
     col_names <- names(events_df)
-    cols_inc_NAs <- str_extract(col_names, "referent.*")
-    col_select <- discard(cols_inc_NAs, is.na)
+    cols_inc_na <- str_extract(col_names, "referent.*")
+    col_select <- discard(cols_inc_na, is.na)
   }
 
   # Run through events backwards
@@ -70,7 +68,7 @@ merge_events <- function(events_df, frame_gap, behav_name = NULL) {
   return(events_df)
 }
 
-format_events <- function(input_df){
+format_events <- function(input_df) {
 
   # May remove the ungroup function if it is done earlier in the process
   input_df <- ungroup(input_df) %>%
@@ -93,10 +91,10 @@ extract_behavs <- function(input_data, behav_name, partial = T) {
   # Extract columns containing behaviour of interest and prepare them
   # for further analysis
 
-  if (partial){
-    pattern = paste0("^", behav_name, ".*\\.")
+  if (partial) {
+    pattern <- paste0("^", behav_name, ".*\\.")
   } else {
-    pattern = paste0("^", behav_name, "\\.")
+    pattern <- paste0("^", behav_name, "\\.")
   }
   # Drop any column that doesn't contain behav_name
   output_data <- select(input_data, time, matches(pattern)) %>%
@@ -107,7 +105,7 @@ extract_behavs <- function(input_data, behav_name, partial = T) {
   return(output_data)
 }
 
-extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
+extend_event_by_frame <- function(input_data, time_in, frame_shift = 1) {
 
   # Extends timings of an event by a specified number of frames
   #
@@ -143,7 +141,7 @@ extend_event_by_frame <- function(input_data, time_in, frame_shift = 1){
 
 }
 
-extract_unique_objects <- function(input_df){
+extract_unique_objects <- function(input_df) {
 
   # Extracts all the unique objects from all columns beginning with "obj"
   # Ignores anything not a word (spaces and punctuation)
@@ -161,7 +159,7 @@ extract_unique_objects <- function(input_df){
   return(unique_objs)
 }
 
-extract_obj_events <- function(object_label, input_df){
+extract_obj_events <- function(object_label, input_df) {
 
   # Extracts onset and offset for manipulation of specific objects from PCI
   # events
@@ -177,9 +175,9 @@ extract_obj_events <- function(object_label, input_df){
 
 }
 
-convert_events_to_objs <- function(input_df){
+convert_events_to_objs <- function(input_df) {
 
-  # Takes a data frame of events tagged with objects and convertis it to a data
+  # Takes a data frame of events tagged with objects and converts it to a data
   # frame of object events, ie events for each opject manipulated
 
   # Get a list of unique objects for that participant
@@ -199,7 +197,7 @@ convert_events_to_objs <- function(input_df){
 }
 
 parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
-                               remove_ambig = F, frame_gap = 2){
+                               remove_ambig = F, frame_gap = 2) {
 
   # Takes raw data and parses selected behavioral events from it
   # Includes 'Remove Ambiguous' flag:
@@ -208,32 +206,58 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   # Extract behav_name columns from data
   raw_behav <- extract_behavs(raw_data, behav_name, partial_matching)
 
+  # Removes NAs from raw data to show if there are any behav_events to convert
   behav_events <- mutate(raw_behav, # Add frame numbers & behav_name
                          frame_n = row_number(),
                          behav_name = behav_name) %>%
     na.omit() # Remove NAs = include all events, certain and ambiguous
 
+  # If there are no events: set all values as NAs, format as usual and
+  # return early.
   if (nrow(behav_events) == 0) {
-    # If there are no events: set all values as NAs, format as usual and
-    # return early.
     behav_events <- add_row(behav_events, behav_name = behav_name) %>%
       format_events()
 
     return(behav_events)
-
-  } else {
-    # Group and summarise data into individual events
-    # summarise not used as non-named columns are dropped
-
-    grouped_events <- group_by(behav_events, ordinal)
-
-    grouped_events <- mutate(grouped_events,
-                             first_frame = min(frame_n),
-                             last_frame = max(frame_n)) %>%
-      filter(frame_n == first_frame)
-
-    behav_events <- ungroup(grouped_events)
   }
+
+  # Group and summarise data into individual events
+  # summarise not used as non-named columns are dropped
+  grouped_events <- group_by(behav_events, ordinal)
+
+  grouped_events <- mutate(grouped_events,
+                           first_frame = min(frame_n),
+                           last_frame = max(frame_n)) %>%
+    filter(frame_n == first_frame)
+
+  behav_events <- ungroup(grouped_events)
+
+
+  # By default referent events are missing from parentnoun variable, if they are
+  # missing this recovers the referents from the raw data and appends them to
+  # the correct behavioural event
+  if (str_detect(behav_name, "parentnoun") &
+      any(!"referent" %in% colnames(raw_behav))) {
+
+    # Extract lookingATobj variable where referent data can be found
+    referent_data <- extract_behavs(raw_data, "lookingATobj", partial_matching) %>%
+      drop_na()
+
+    # Extract referent events
+    referent_events <- group_by(referent_data, ordinal) %>%
+      summarise(label = first(label),
+                ordinal = first(ordinal),
+                referent1 = first(referent1),
+                referent2 = first(referent2),
+                .groups = "drop")
+
+    # Join referent_events dataframe to behav_events dataframe by ordinal and
+    # label to ensure correct referents end up associated with correct behav
+    # events
+    behav_events <- left_join(behav_events, referent_events,
+                              by = c("ordinal", "label"))
+  }
+
 
   # Optional event proccessing
   # Remove abiguous events
@@ -254,11 +278,13 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   }
 
   # Merge proximal events
-  if (str_detect(behav_name, "(parent|baby)(AT|obj)")){
+  if (str_detect(behav_name, "(parent|baby)(AT|obj)")) {
     # Should only be for looking events, not actions, with consistent labels
     #
     # Could modify convert_events_to_objs so merging done here, but would need
     # to account for different variable names (label/obj) in merge_events
+    #
+    # Do we need to include parentnoun events?
     behav_events <- merge_events(behav_events,
                                  frame_gap = frame_gap,
                                  behav_name)
@@ -268,5 +294,362 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   behav_events <- format_events(behav_events)
 
   return(behav_events)
+}
 
+# Finding and processing overlap functions ----
+
+select_behav <- function(input_df, behav_selected, add_col_suffix = NULL) {
+
+  df_out <- filter(input_df, str_detect(behav_name, behav_selected)) %>%
+    rename_all(add_col_suffix, .funs = str_c)
+
+  return(df_out)
+}
+
+
+find_overlaps <- function(behav_name1, behav_name2, df_in, incbounds = FALSE) {
+
+  df1 <- select_behav(df_in, behav_name1, add_col_suffix = ".1")
+  df2 <- select_behav(df_in,behav_name2, add_col_suffix = ".2")
+
+  expanded_dfs <- crossing(df1, df2)
+
+  overlap_df <- mutate(
+    expanded_dfs,
+    onset1_in_ev2 = between(onset.1, onset.2, offset.2,
+                            incbounds, NAbounds = NA),
+    offset1_in_ev2 = between(offset.1, onset.2, offset.2,
+                             incbounds, NAbounds = NA),
+    onset2_in_ev1 = between(onset.2, onset.1, offset.1,
+                            incbounds, NAbounds = NA),
+    offset2_in_ev1 = between(offset.2, onset.1, offset.1,
+                             incbounds, NAbounds = NA)) %>%
+    mutate(across(contains("_in_"), replace_na, FALSE))
+
+  return(overlap_df)
+
+}
+
+extend_event_overlaps <- function(behav_df_in, overlapping_events) {
+
+  # Set to proccess data rowwise
+  adjusted_overlapping_events <- rowwise(overlapping_events) %>%
+    # Find which onset was earlier and which offset was later across each
+    # overlapping event pairing
+    mutate(event_ID = event_ID.2,
+           behav_name = behav_name.2,
+           onset = min(onset.1, onset.2),
+           offset = max(offset.1, offset.2))
+
+  # Group the event_IDs together and find the overall earliest/latest
+  # onset/offset for that event
+  adjusted_events <- group_by(adjusted_overlapping_events, event_ID) %>%
+    summarise(behav_name = first(behav_name),
+              onset = min(onset),
+              offset = max(offset),
+              .groups = "drop")
+
+  # Update main behav df with new timings
+  behav_df_out <- rows_upsert(behav_df_in, adjusted_events, by = "event_ID") %>%
+    mutate(duration = offset - onset)
+
+  return(behav_df_out)
+}
+
+
+remove_overlapping_events <- function(target_ev_name, comparator_ev_name,
+                                      behav_df_in, extend = FALSE){
+
+  crossed_events <- find_overlaps(comparator_ev_name,
+                                  target_ev_name,
+                                  behav_df_in)
+  overlapping_events <- filter(crossed_events, onset1_in_ev2 | offset1_in_ev2)
+
+  if (extend & nrow(overlapping_events) > 0){
+    behav_df_in <- extend_event_overlaps(behav_df_in, overlapping_events)
+  }
+
+  behav_df_out <- filter(behav_df_in,
+                         !(event_ID %in% overlapping_events$event_ID.1))
+
+  return(behav_df_out)
+
+}
+
+# Summarise event functions ----
+
+# Add the stats to the data_out variable
+summarise_events <- function(data_in, sig.digits = 3, suffix = NULL) {
+
+  data_summary <- group_by(data_in, behav_name) %>%
+    summarise(.duration = sum(duration), # Total event time
+              .mean = mean(duration), # Mean event time
+              .sd = sd(duration), # SD of event time
+              .median = median(duration), # Median of event time
+              .IQR = IQR(duration, na.rm = T), # IQR of event time
+              .num = if_else(is.na(.mean), NA_integer_, n()), # How many events
+              .groups = "drop") %>%
+    mutate(across(starts_with("."), round, digits = sig.digits))
+
+  if (!is.null(suffix)){
+    data_summary <- add_behav_name_suffix(data_summary, suffix)
+  }
+
+  return(data_summary)
+
+}
+
+add_behav_name_suffix <- function(data_in, suffix) {
+  data_out <- mutate(data_in,
+                     behav_name = str_c(behav_name, suffix, sep = "_"))
+
+  return(data_out)
+}
+
+add_summary_stats <- function(individual_summary_stats, all_summary_stats,
+                              participant_id) {
+
+  wide_summary_stats <- individual_summary_stats %>%
+    pivot_wider(
+      names_from = behav_name,
+      values_from = colnames(event_summary_stats)[-1],
+      names_glue = "{behav_name}{.value}") %>%
+    add_column(PartID = participant_id, .before = 1)
+
+
+  all_summary_stats <- bind_rows(all_summary_stats, wide_summary_stats)
+
+  return(all_summary_stats)
+}
+
+
+# Process looks ----
+
+process_mutual_looks <- function(data_in, behav_name1, behav_name2) {
+
+  # Function just for processing mutual looks.
+  # Takes behav events dataframe in, along with two behav_names
+  # Overlaps all events and returns any overlapping event
+
+  out_behav_name <- "mutual_looks"
+
+  # Find overlapping events
+  crossed_events <- find_overlaps(behav_name1, behav_name2, data_in)
+
+  # Only select events with overlap
+  overlapping_events <- mutate(crossed_events, event_overlap =
+                                 onset1_in_ev2 | offset1_in_ev2 |
+                                 onset2_in_ev1 | offset2_in_ev1) %>%
+    filter(event_overlap)
+
+  # Early exit if Number of events is less than 1
+  if (nrow(overlapping_events)<1){
+
+    overlapping_df <- tibble(
+      behav_name = character(),
+      onset = numeric(),
+      offset = numeric(),
+      duration = numeric(),
+      which_first = character())
+
+    return(overlapping_df)
+  }
+
+  # Find Which event came first in the overlap
+  overlapping_df <- rowwise(overlapping_events) %>%
+    transmute(behav_name = out_behav_name,
+              onset = max(onset.1, onset.2),
+              offset = min(offset.1, offset.2),
+              duration = offset - onset,
+              which_first = case_when(onset2_in_ev1 ~ behav_name1,
+                                      onset1_in_ev2 ~ behav_name2))
+
+  return(overlapping_df)
+
+
+}
+
+
+
+find_naming_overlap <- function(comp_event, target_event, data_in ) {
+
+  # This function takes in a data frame with behav events and returns a data
+  # frame with at least all naming events once
+  #
+  # Should find overlaps between naming events and handling/looking events and
+  # give details about the overlap
+  #
+  # If no overlaps exist then the naming event should still be returned but
+  # not including overlap details (So we can calc the number of naming events
+  # with and without overlapping events)
+
+  # Determine who the actor is
+  if (str_detect(comp_event, "baby")) {
+    actor <- "baby"
+  } else if (str_detect(comp_event, "parent")){
+    actor <- "parent"
+  }
+
+  # Determine what the event type is
+  if (str_detect(comp_event, "ATobj")){
+    event <- "looking"
+  } else if (str_detect(comp_event, "obj")) {
+    event <- "handling"
+  }
+
+  # Pretty fragile
+  if (str_detect(target_event, "windowed")){
+    suffix <- "windowed"
+  } else {
+    suffix <- NULL
+  }
+
+  # Generate behav_name for the output of this function
+  out_behav_name <- str_c("naming", suffix, actor, event, sep = "_")
+
+  # Start by pulling all the target events (i.e. naming)
+  overlapping_events <- find_overlaps(target_event, comp_event, data_in) %>%
+    filter(onset1_in_ev2 | offset1_in_ev2 | onset2_in_ev1 | offset2_in_ev1)
+
+  # if there aren't any overlapping events then exit early
+  if (nrow(overlapping_events) < 1){
+    # Need to work out what to return here
+  }
+
+  overlapping_df <- rowwise(overlapping_events) %>%
+    transmute(event_ID = event_ID.1,
+              ordinal = ordinal.1,
+              behav_name = out_behav_name,
+              actor = actor,
+              event = event,
+              naming_onset = onset.1,
+              naming_offset = offset.1,
+              label = label.1,
+              referent1 = referent1.1,
+              referent2 = referent2.1,
+              look_obj1 = referent1.2,
+              look_obj2 = referent2.2,
+              held_obj = obj.2,
+              overlap_onset = max(onset.1, onset.2),
+              overlap_offset = min(offset.1, offset.2),
+              overlap_duration = overlap_offset - overlap_onset,
+              which_first = case_when(onset2_in_ev1 ~ target_event,
+                                      onset1_in_ev2 ~ actor))
+
+  if (event == "handling") {
+    overlapping_df <- mutate(
+      overlapping_df,
+      obj_match = if_else(referent1 == held_obj | referent2 == held_obj,
+                          TRUE, FALSE))
+
+  } else if (event == "looking") {
+    overlapping_df <- mutate(
+      overlapping_df,
+      obj_match = if_else(referent1 == look_obj1 | referent2 == look_obj1 |
+                            ((referent2 == look_obj1 | referent2 == look_obj2) &
+                               referent2 != "."),
+        TRUE, FALSE))
+  # Extract overlap info
+  # Repeat for each comparator event
+  }
+
+  return(overlapping_df)
+
+  # target events with no overlaps in any category should be added back in to
+  # the final data frame
+}
+
+
+count_naming_overlaps <- function(target_event = "parentnoun", data_in, naming_events) {
+
+  # Take target_event, and comparator events. Find overlaps and extract info
+  # about them. Including detailed events, counts per event types, summary of
+  # events.
+
+  # Count the overlapping event types (regardless of whether they match)
+  overlaps_count_all <- count_overlaps(overlapping_events)
+
+  # Count the overlapping event types (only if they match)
+  overlaps_count_match <- filter(data_in, obj_match) %>%
+    count_overlaps(suffix = "matching")
+
+  # Join the data frames
+  all_naming_events <- left_join(naming_events,
+                                 overlaps_count_all,
+                                 by = "event_ID")
+  all_naming_events <- left_join(all_naming_events,
+                                 overlaps_count_match,
+                                 by = "event_ID")
+  # Replace NAs with zeros
+  all_naming_events <- mutate(
+    all_naming_events,
+    across(.cols = -event_ID, ~ replace_na(.x, 0))
+  )
+
+  return(all_naming_events)
+}
+
+count_overlaps <- function(data_in, suffix = NULL) {
+
+  data_group <- group_by(data_in, event_ID)
+
+  data_summary <- summarise(
+    data_group,
+    baby_handle = sum(actor == "baby" & event == "handling"),
+    baby_look = sum(actor == "baby" & event == "looking"),
+    parent_handle = sum(actor == "parent" & event == "handling"),
+    parent_look = sum(actor == "parent" & event == "looking")
+  )
+
+  if (!is.null(suffix)) {
+    data_summary <- rename_with(.data = data_summary, .f = str_c,
+                                .cols = -event_ID, suffix, sep = "_")
+  }
+
+  return(data_summary)
+}
+
+
+window_behav <- function(data_in, behav_name, time_window) {
+
+  # Select a specific event and adjust the onset and offset by the time_window
+  # provided. Return original data frame with windowed event appended.
+
+
+  # Check to make sure that the values provided in the time_window argument make
+  # sense
+  if (!is.numeric(time_window)) {
+    stop("time_window should be numeric values")
+  } else if (any(time_window < 0)) {
+    stop("time_window contains negative values, please use positive values only")
+  } else if (length(time_window) > 2) {
+    stop("time_window contains incorrect number of values, please use either 1 or 2")
+  } else if (length(time_window) == 2) {
+    # If there are 2 values then seperate them out
+    onset_adj <- time_window[1]
+    offset_adj <- time_window[2]
+  } else {
+    # If there is only a single value then use it for both sides of the window
+    onset_adj <- time_window
+    offset_adj <- time_window
+  }
+
+  last_event <- max(data_in$event_ID)
+
+  # Select the specific behavior to be windowed
+  selected_behav <- select_behav(data_in, behav_name)
+
+  # Window behaviour and give new events new IDs
+  windowed_behav <- mutate(selected_behav,
+                           onset = if_else(onset - onset_adj > 0,
+                                           onset - onset_adj, 0),
+                           offset = offset + offset_adj,
+                           event_ID = row_number() + last_event) %>%
+    # Adjust behav_name to show it is windowed
+    add_behav_name_suffix("windowed")
+
+  # Add it back into the original data frame
+  data_out <- bind_rows(data_in, windowed_behav)
+
+  return(data_out)
 }
