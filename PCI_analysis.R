@@ -13,6 +13,7 @@ if (remove_ambiguous) {
 
 # Prepare empty dataframes for data output
 summary_stats_output <- tibble()
+all_looks_output <- tibble()
 mutual_looks_output <- tibble()
 overlapping_events_output <- tibble()
 count_naming_overlaps_output <- tibble()
@@ -26,7 +27,7 @@ files <- dir(path = raw_data_path,
 
 for (file_name in files) {
 
-  # Extract partipcipant ID
+  # Extract participant ID
   PartID <- str_extract(file_name, "(?<=/)[:alnum:]+_[:digit:]+")
 
   # Load PCI data
@@ -50,6 +51,11 @@ for (file_name in files) {
     behav_df_in = behav_events,
     extend = TRUE)
 
+  all_looks_output <- filter(behav_events, str_detect(behav_name, "AT(parent|baby)") ) %>%
+    select(ordinal, behav_name, onset, offset, duration) %>%
+    mutate(PartID = PartID, .before = 1) %>%
+    bind_rows(all_looks_output, .)
+
   # Generate stats for all events
   event_summary_stats <- summarise_events(behav_events)
 
@@ -57,7 +63,7 @@ for (file_name in files) {
                                             summary_stats_output,
                                             PartID)
 
-  # Get individual mututl look events
+  # Get individual mutual look events
   mutual_look_events <- process_mutual_looks(behav_events,
                                                "parentATbaby",
                                                "babyATparent") %>%
@@ -66,10 +72,10 @@ for (file_name in files) {
   # Bind events for output
   mutual_looks_output <- bind_rows(mutual_looks_output, mutual_look_events)
 
-  # Still need to deide what to do with summarising events, might want to set up
-  # a seperate function that calls the summary_function on the mutual looks and
-  # the different frist look types
-  # summarise_events(mututal_looks_summary)
+  # Still need to decide what to do with summarising events, might want to set up
+  # a separate function that calls the summary_function on the mutual looks and
+  # the different first look types
+  # summarise_events(mutual_looks_summary)
 
   overlapping_events <- map_df(comp_events, find_naming_overlap,
                                target_event = target_event, data_in = behav_events)
@@ -101,7 +107,10 @@ for (file_name in files) {
 
 }
 
+
+
 save(mutual_looks_output, file = "data/looks_data/mutual_looks.RData")
+save(all_looks_output, file = "data/looks_data/all_looks.RData")
 save(overlapping_events_output, file = "data/naming_data/overlaping_naming_events.RData")
 
 write_csv(summary_stats_output, "data/event_data/events_summary.csv")
