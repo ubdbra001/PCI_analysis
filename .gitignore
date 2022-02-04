@@ -1,8 +1,4 @@
-packrat/lib*/
 .Rproj.user
-.~lock*.csv#
-packrat/src/
-packrat/bundles/
 .Rhistory
 scratchpad.R
 data/*/*.csv
