@@ -2,5 +2,5 @@
 .Rhistory
 scratchpad.R
 data/*/*.csv
-data/*/*.tsv
+data/*/*.txt
 data/*/*.RData
