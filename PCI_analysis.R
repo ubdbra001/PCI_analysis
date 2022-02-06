@@ -31,7 +31,7 @@ for (file_name in files) {
   PartID <- str_extract(file_name, "(?<=/)[:alnum:]+_[:digit:]+")
 
   # Load PCI data
-  PCIData <- read_delim(file_name, delim = ";", col_types = data_col_def)
+  PCIData <- read_delim(file_name, delim = "|", col_types = data_col_def)
 
   # Parse behavioural events from raw data
   behav_events <- map2_df(.x = behav_names,
