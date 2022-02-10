@@ -1,5 +1,12 @@
 # PCI analysis scripts
 
+## Prerequisites
+
+### MacOS
+
+1. Install xcode: `xcode-select --install`
+2. gfortran compiler may also be needed, install from (here)[https://github.com/fxcoudert/gfortran-for-macOS/releases]
+
 ## Installation
 
 1. Start by downloading the scripts. The easiest option is to select: *Code* > *Download Zip*
@@ -20,4 +27,4 @@ Currently there is a single script that runs all the processing steps, this is *
 3. Extract the mutual looks from the data
 4. Extract all the handling and looking events that overlap with a naming event, and return a detailed list and a count of each type of overlap for each naming event
 
-To run this script, ensure that all the raw data (.tsv files) is placed in the *data/raw_data* directory. Then open and run the PCI_analysis.R script.
+To run this script, ensure that all the raw data (.txt files) is placed in the *data/raw_data* directory. Then open and run the PCI_analysis.R script.
