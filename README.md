@@ -5,7 +5,7 @@
 ### MacOS
 
 1. Install xcode: `xcode-select --install`
-2. gfortran compiler may also be needed, install from (here)[https://github.com/fxcoudert/gfortran-for-macOS/releases]
+2. gfortran compiler may also be needed, install from [here](https://github.com/fxcoudert/gfortran-for-macOS/releases)
 
 ## Installation
 
