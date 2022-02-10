@@ -28,7 +28,7 @@ files <- dir(path = raw_data_path,
 for (file_name in files) {
 
   # Extract participant ID
-  PartID <- str_extract(file_name, "(?<=/)[:alnum:]+_[:digit:]+")
+  PartID <- str_extract(file_name, partID_regex)
 
   # Load PCI data
   PCIData <- read_delim(file_name, delim = "|", col_types = data_col_def)

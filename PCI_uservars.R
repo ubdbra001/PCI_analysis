@@ -18,6 +18,8 @@ proc_data_path <- "." # Not sure what this does?
 input_pattern <- ".*.txt"
 output_file_name <- "PCIsummary"
 
+partID_regex <- "(?<=/)[:alnum:]+_[:upper:]*[:digit:]+"
+
 data_col_def <- cols(
   time = col_double(),
   PCIduration.ordinal = col_double(),
