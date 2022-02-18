@@ -7,17 +7,19 @@ process_naming <- FALSE   # Process naming overlaps inc summaries
 
 # Ignore events marked as ambiguous:
 remove_ambiguous <- FALSE
+
 remove_bookreading <- TRUE
 
 # Size of gap for event merging
 frame_gap <- 2
 
-# Data input and output
+# Data input and output paths
 raw_data_path <- "data/raw_data"
-proc_data_path <- "." # Not sure what this does?
+looks_data_path <- "data/looks_data"
+naming_data_path <- "data/naming_data"
+event_data_path <- "data/event_data"
 
 input_pattern <- ".*.txt"
-output_file_name <- "PCIsummary"
 
 partID_regex <- "(?<=/)[:alnum:]+_[:upper:]*[:digit:]+"
 
