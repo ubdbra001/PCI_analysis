@@ -112,11 +112,11 @@ for (file_name in files) {
 
 }
 
-save_data(mutual_looks_output, "mutual_looks", "data/looks_data", remove_ambiguous)
-save_data(all_looks_output, "all_looks", "data/looks_data", remove_ambiguous)
+save_data(mutual_looks_output, "mutual_looks", looks_data_path, remove_ambiguous)
+save_data(all_looks_output, "all_looks", looks_data_path, remove_ambiguous)
 
-save_data(overlapping_events_output, "overlaping_naming_events", "data/naming_data", remove_ambiguous)
-save_data(count_naming_overlaps_output, "overlaps_count", "data/naming_data", remove_ambiguous)
+save_data(overlapping_events_output, "overlaping_naming_events", naming_data_path, remove_ambiguous)
+save_data(count_naming_overlaps_output, "overlaps_count", naming_data_path, remove_ambiguous)
 
-save_data(summary_stats_output, "events_summary", "data/event_data", remove_ambiguous)
+save_data(summary_stats_output, "events_summary", event_data_path, remove_ambiguous)
 
