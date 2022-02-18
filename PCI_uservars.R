@@ -23,6 +23,24 @@ input_pattern <- ".*.txt"
 
 partID_regex <- "(?<=/)[:alnum:]+_[:upper:]*[:digit:]+"
 
+# Variables for data extraction
+behav_names <- c(
+  "PCIduration",
+  "bookreading",
+  "offCameras",
+  "babyATparentface",
+  "parentATbabyface",
+  "babyobj",
+  "parentobj",
+  "parentnoun",
+  "babyATobj",
+  "parentATobj")
+
+partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
+
+target_event <- "parentnoun"
+comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
+
 data_col_def <- cols(
   time = col_double(),
   PCIduration.ordinal = col_double(),
@@ -113,22 +131,3 @@ data_col_def <- cols(
   parentATobj_parentnoun.a = col_character(),
   .default = col_skip()
 )
-
-
-# Variables for data extraction
-behav_names <- c(
-  "PCIduration",
-  "bookreading",
-  "offCameras",
-  "babyATparentface",
-  "parentATbabyface",
-  "babyobj",
-  "parentobj",
-  "parentnoun",
-  "babyATobj",
-  "parentATobj")
-
-partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
-
-comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
-target_event <- "parentnoun"
