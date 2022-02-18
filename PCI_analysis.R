@@ -30,6 +30,8 @@ for (file_name in files) {
   # Extract participant ID
   PartID <- str_extract(file_name, partID_regex)
 
+  message(paste("Starting", PartID, sep = " "))
+
   # Load PCI data
   PCIData <- read_delim(file_name, delim = "|", col_types = data_col_def)
 
