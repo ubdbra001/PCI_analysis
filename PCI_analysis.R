@@ -51,6 +51,15 @@ for (file_name in files) {
     behav_df_in = behav_events,
     extend = TRUE)
 
+  if (remove_bookreading) {
+    behav_events <- remove_overlapping_events(
+      target_ev_name = "bookreading",
+      comparator_ev_name = "baby|parent",
+      behav_df_in = behav_events,
+      extend = TRUE)
+  }
+
+
   all_looks_output <- filter(behav_events, str_detect(behav_name, "AT(parent|baby)") ) %>%
     select(ordinal, behav_name, onset, offset, duration) %>%
     mutate(PartID = PartID, .before = 1) %>%

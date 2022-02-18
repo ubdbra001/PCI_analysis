@@ -7,6 +7,7 @@ process_naming <- FALSE   # Process naming overlaps inc summaries
 
 # Ignore events marked as ambiguous:
 remove_ambiguous <- FALSE
+remove_bookreading <- TRUE
 
 # Size of gap for event merging
 frame_gap <- 2
