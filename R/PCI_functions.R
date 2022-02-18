@@ -259,8 +259,8 @@ parse_behav_events <- function(behav_name, partial_matching = T, raw_data,
   }
 
 
-  # Optional event proccessing
-  # Remove abiguous events
+  # Optional event processing
+  # Remove ambiguous events
   if (remove_ambig & "a" %in% colnames(behav_events)) {
     behav_events <- filter(behav_events, a != "a")
   }
@@ -654,7 +654,7 @@ window_behav <- function(data_in, behav_name, time_window) {
   return(data_out)
 }
 
-# Data save functions
+# Data save functions ----
 
 save_data <- function(data, dataname, path, remove_ambiguous) {
 
