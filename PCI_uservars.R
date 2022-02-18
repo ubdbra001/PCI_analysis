@@ -8,17 +8,38 @@ process_naming <- FALSE   # Process naming overlaps inc summaries
 # Ignore events marked as ambiguous:
 remove_ambiguous <- FALSE
 
+remove_bookreading <- TRUE
+
 # Size of gap for event merging
 frame_gap <- 2
 
-# Data input and output
+# Data input and output paths
 raw_data_path <- "data/raw_data"
-proc_data_path <- "." # Not sure what this does?
+looks_data_path <- "data/looks_data"
+naming_data_path <- "data/naming_data"
+event_data_path <- "data/event_data"
 
 input_pattern <- ".*.txt"
-output_file_name <- "PCIsummary"
 
 partID_regex <- "(?<=/)[:alnum:]+_[:upper:]*[:digit:]+"
+
+# Variables for data extraction
+behav_names <- c(
+  "PCIduration",
+  "bookreading",
+  "offCameras",
+  "babyATparentface",
+  "parentATbabyface",
+  "babyobj",
+  "parentobj",
+  "parentnoun",
+  "babyATobj",
+  "parentATobj")
+
+partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
+
+target_event <- "parentnoun"
+comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
 
 data_col_def <- cols(
   time = col_double(),
@@ -110,22 +131,3 @@ data_col_def <- cols(
   parentATobj_parentnoun.a = col_character(),
   .default = col_skip()
 )
-
-
-# Variables for data extraction
-behav_names <- c(
-  "PCIduration",
-  "bookreading",
-  "offCameras",
-  "babyATparentface",
-  "parentATbabyface",
-  "babyobj",
-  "parentobj",
-  "parentnoun",
-  "babyATobj",
-  "parentATobj")
-
-partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
-
-comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
-target_event <- "parentnoun"

@@ -4,13 +4,6 @@ source("R/PCI_functions.R")
 # Load user defined variables ####
 source("PCI_uservars.R")
 
-# Generate output filename
-if (remove_ambiguous) {
-  output_file <- sprintf("%s_noAmbg.csv", output_file_name)
-} else {
-  output_file <- sprintf("%s_inAmbg.csv", output_file_name)
-}
-
 # Prepare empty dataframes for data output
 summary_stats_output <- tibble()
 all_looks_output <- tibble()
@@ -29,6 +22,8 @@ for (file_name in files) {
 
   # Extract participant ID
   PartID <- str_extract(file_name, partID_regex)
+
+  message(paste("Starting", PartID, sep = " "))
 
   # Load PCI data
   PCIData <- read_delim(file_name, delim = "|", col_types = data_col_def)
@@ -50,6 +45,16 @@ for (file_name in files) {
     comparator_ev_name = "baby|parent",
     behav_df_in = behav_events,
     extend = TRUE)
+
+  # If specified remove bookreading events
+  if (remove_bookreading) {
+    behav_events <- remove_overlapping_events(
+      target_ev_name = "bookreading",
+      comparator_ev_name = "baby|parent",
+      behav_df_in = behav_events,
+      extend = TRUE)
+  }
+
 
   all_looks_output <- filter(behav_events, str_detect(behav_name, "AT(parent|baby)") ) %>%
     select(ordinal, behav_name, onset, offset, duration) %>%
@@ -107,12 +112,11 @@ for (file_name in files) {
 
 }
 
+save_data(mutual_looks_output, "mutual_looks", looks_data_path, remove_ambiguous)
+save_data(all_looks_output, "all_looks", looks_data_path, remove_ambiguous)
 
+save_data(overlapping_events_output, "overlaping_naming_events", naming_data_path, remove_ambiguous)
+save_data(count_naming_overlaps_output, "overlaps_count", naming_data_path, remove_ambiguous)
 
-save(mutual_looks_output, file = "data/looks_data/mutual_looks.RData")
-save(all_looks_output, file = "data/looks_data/all_looks.RData")
-save(overlapping_events_output, file = "data/naming_data/overlaping_naming_events.RData")
-
-write_csv(summary_stats_output, "data/event_data/events_summary.csv")
-write_csv(count_naming_overlaps_output, "data/naming_data/overlaps_count.csv")
+save_data(summary_stats_output, "events_summary", event_data_path, remove_ambiguous)
 
