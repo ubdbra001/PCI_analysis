@@ -653,3 +653,39 @@ window_behav <- function(data_in, behav_name, time_window) {
 
   return(data_out)
 }
+
+# Data save functions
+
+save_data <- function(data, dataname, path, remove_ambiguous) {
+
+  filename <- construct_filename(dataname, remove_ambiguous)
+  filepath_Rdata <- construct_path(filename, "RData", path)
+  filepath_csv <- construct_path(filename, "csv", path)
+
+  save(data, file = filepath_Rdata)
+  write_csv(data, file = filepath_csv)
+
+}
+
+construct_filename <- function(dataname, remove_ambiguous) {
+
+  if (remove_ambiguous) {
+    ra_file_comp = "noAmbg"
+  } else {
+    ra_file_comp = "inAmbg"
+  }
+
+  date = format(Sys.Date(), "%Y%m%d")
+
+  filename = paste(dataname, ra_file_comp, date, sep = "_")
+
+  return(filename)
+}
+
+construct_path <- function(filename, extension, path) {
+
+  filename_Wext <- paste(filename, extension, sep = ".")
+  filepath <- file.path(path, filename_Wext)
+
+  return(filepath)
+}
