@@ -48,6 +48,10 @@ comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
 # Minimum length of difference (anything lower will be ignored)
 min_diff_length <- 0
 
+
+# Column indicating extent of data to include
+data_filt <- "PCIduration.ordinal"
+
 # set directories
 data_dir <- "data/IRR"
 coder1_dir <- file.path(data_dir, "coder1")
