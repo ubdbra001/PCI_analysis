@@ -74,3 +74,11 @@ Variables that define the target and comparison events for overlapping event ana
 
 #### `data_col_def`:
 Variable that defines the column names and types in the data
+
+---
+
+# IRR Scripts
+
+Use the `PCI_IRR.R` script to run.  
+User variables can be found in the `PCI_uservars.R`.  
+See `data/IRR` for readme.  
