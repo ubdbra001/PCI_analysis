@@ -1,6 +1,10 @@
 .Rproj.user
 .Rhistory
 scratchpad.R
-data/*/*.csv
-data/*/*.txt
+data/*_data/*.csv
+data/**/*.txt
 data/*/*.RData
+data/IRR/differences/*.csv
+data/IRR/IRR_summary.csv
+data/IRR/*.html
+PCI_IRR_old.R
