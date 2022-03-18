@@ -19,8 +19,13 @@ IRR_summary$PCI_diff_len <- F
 # For each ID
 for (row_n in seq_len( nrow(IRR_master) ) ){
 
+  # Pull out info from row
   part_info <- slice(IRR_master, row_n)
+
+  # Participant ID
   part_ID <- part_info$ID
+
+  # Columns to assess
   col_include <- as.logical(part_info[-1])
   behav_interest <- IRR_behav_vec[col_include]
 
