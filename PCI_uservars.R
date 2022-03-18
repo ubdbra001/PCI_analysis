@@ -1,5 +1,7 @@
 library(readr)
 
+## PCI only
+
 # Analysis to include:
 event_summary <- TRUE    # Provide summary stats for all event
 process_looks <- TRUE    # Process mutual looks inc summaries
@@ -40,6 +42,24 @@ partial_matching <- c(T, T, T, T, T, F, F, T, T, T)
 
 target_event <- "parentnoun"
 comp_events <- c("babyobj", "parentobj", "babyATobj", "parentATobj")
+
+### IRR only
+
+# Minimum length of difference (anything lower will be ignored)
+min_diff_length <- 0
+
+# set directories
+data_dir <- "data/IRR"
+coder1_dir <- file.path(data_dir, "coder1")
+coder2_dir <- file.path(data_dir, "coder2")
+diff_dir <- file.path(data_dir, "differences")
+
+
+skip_mess <- c("\n%s skipped, please check that there is one, ",
+               "and only one, file per coder for this participant\n")
+pattern_template <- ".*%s.*.txt"
+
+
 
 data_col_def <- cols(
   time = col_double(),

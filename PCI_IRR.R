@@ -3,18 +3,6 @@ library(tidyverse)
 source("PCI_uservars.R")
 source("R/IRR_functions.R")
 
-# set directories
-data_dir <- "data/IRR"
-coder1_dir <- file.path(data_dir, "coder1")
-coder2_dir <- file.path(data_dir, "coder2")
-diff_dir <- file.path(data_dir, "differences")
-
-min_diff_length <- 0
-
-skip_mess <- c("\n%s skipped, please check that there is one, ",
-               "and only one, file per coder for this participant\n")
-pattern_template <- ".*%s.*.txt"
-
 
 # Load file specifies each participant ID and the columns to compare
 IRR_master <- read_csv(file.path(data_dir, "IRR_template.csv"))
