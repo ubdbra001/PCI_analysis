@@ -13,7 +13,7 @@ IRR_behav_vec <- colnames(IRR_master)[-1]
 # Create empty output dataframe
 IRR_summary <- IRR_master
 IRR_summary[, IRR_behav_vec] <- NA_real_
-IRR_summary$PCI_diff_len <- F
+IRR_summary$diff_file_len <- F
 
 
 # For each ID
@@ -52,7 +52,7 @@ for (row_n in seq_len( nrow(IRR_master) ) ){
 
   # If there is a difference make a not and then shorten the longer data frame
   if (row_diff != 0) {
-    IRR_summary <- rows_update(IRR_summary, tibble(ID = part_ID, PCI_diff_len = T), by = "ID")
+    IRR_summary <- rows_update(IRR_summary, tibble(ID = part_ID, diff_file_len = T), by = "ID")
 
     if (row_diff > 0) {
       c1_data <- c1_data[1:nrow(c2_data), ]
