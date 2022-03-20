@@ -40,8 +40,8 @@ for (row_n in seq_len( nrow(IRR_master) ) ){
 
   # Skip if either file is not present or there are multiples
   if (c1_files$single_file & c1_files$single_file){
-    c1_data <- load_file(c1_files$path, data_col_def, filter_col = data_filt)
-    c2_data <- load_file(c2_files$path, data_col_def, filter_col = data_filt)
+    c1_data <- load_file(c1_files$path, data_col_def, delim = file_delim, filter_col = data_filt)
+    c2_data <- load_file(c2_files$path, data_col_def, delim = file_delim, filter_col = data_filt)
   } else {
     message(sprintf(skip_mess, part_ID))
     next

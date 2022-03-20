@@ -13,8 +13,8 @@ file_search <- function(path, pattern){
 }
 
 
-load_file <- function(path, col_def, delim = "|", filter_col) {
-  data <- read_delim(path, delim = "|", col_types = col_def) %>%
+load_file <- function(path, col_def, delim, filter_col) {
+  data <- read_delim(path, delim = delim, col_types = col_def) %>%
     filter(!is.na(!!sym(filter_col)))
 }
 

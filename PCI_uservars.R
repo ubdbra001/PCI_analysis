@@ -63,6 +63,8 @@ skip_mess <- c("\n%s skipped, please check that there is one, ",
                "and only one, file per coder for this participant\n")
 pattern_template <- ".*%s.*.txt"
 
+file_delim = ","
+
 
 
 data_col_def <- cols(
