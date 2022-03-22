@@ -15,6 +15,12 @@ IRR_summary <- IRR_master
 IRR_summary[, IRR_behav_vec] <- NA_real_
 IRR_summary$diff_file_len <- F
 
+datetime_string <- format(Sys.time(), format = "%y%m%d_%H%M%S")
+summary_filename <- sprintf("IRR_summary_%s.csv", datetime_string)
+
+diff_path <- file.path(diff_dir, datetime_string)
+
+if (!dir.exists(diff_path)){ dir.create(diff_path) }
 
 # For each ID
 for (row_n in seq_len( nrow(IRR_master) ) ){
@@ -85,10 +91,10 @@ for (row_n in seq_len( nrow(IRR_master) ) ){
     add_column(ID = part_ID, .before = 1)
 
   # Save diff locations into a file
-  write_csv(diff_locations_tidy, file.path(diff_dir, paste0(part_ID, ".csv")))
+  write_csv(diff_locations_tidy, file.path(diff_path, paste0(part_ID, ".csv")))
 
 }
 
 # Save IRR summary
-write_csv(IRR_summary, file.path(data_dir, "IRR_summary.csv"))
+write_csv(IRR_summary, file.path(data_dir, summary_filename))
 
