@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  rstudio:
+    build: .
+    ports:
+      - "8787:8787"
+    volumes:
+      - type: bind
+        source: ./data
+        target: /home/rstudio/PCI_analysis/data
+
