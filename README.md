@@ -2,20 +2,23 @@
 
 ## Prerequisites
 
-### MacOS
-
-1. Install xcode: `xcode-select --install`
-2. gfortran compiler may also be needed, install from [here](https://github.com/fxcoudert/gfortran-for-macOS/releases)
+Install Docker, see [here](https://docs.docker.com/get-docker/) for instructions for different platforms. 
+For the initial installation you will need an internet connection.
 
 ## Installation
 
-1. Start by downloading the scripts. The easiest option is to select: *Code* > *Download Zip*
-2. Once downloaded extract the PCI_Analysis folder to wherever you want the code to be.
-3. Open the folder containing the code and select the PCI_Analysis.RProj file.
-   - This should open up the PCI_Analysis project within RStudio
-   - You should receive a message about `renv` not being installed, and then RStudio will install it for you and restart the session
-4. Once renv is installed you need to get the dependencies for the project, you can do this by executing `renv::restore()` in the RStudio console
-5. Once the dependencies are installed then you are ready to run the script
+1. Start by downloading the scripts. Either by using:
+  - `git clone https://github.com/ubdbra001/PCI_analysis.git` at the terminal/command line (requires `git` installation)
+  - Alternatively (if you don't have `git` installed): Go to *Code* > *Download Zip*
+2. Once downloaded, extract the PCI_Analysis folder to wherever you want the code to be (if required) and navigate there in the terminal.
+3. Run the command `docker compose up -d`, this will start Rstudio server running in the docker container.
+  - You may need to include the `sudo` command before the above command
+  - If the command runs successfully you will see docker taking several actions to, and the final line when done should read: _Container pci_analysis-rstudio-1  Started_.
+4. Navigate to `localhost:8787` in a web browser. It show a circular spinning dots for a few seconds, then you should see the RStudio interface.
+  - The project `PCI_analysis` should be open, check the top right hand corner of the window.
+  - There should be some text about "Bootstrapping `renv`", the final line should be: _Use `renv::restore()` to install packages recorded in the lockfile._
+5. Executing `renv::restore()` in the RStudio console to install the dependencies for the project.
+6. Once the dependencies are installed then you are ready to run the script
 
 ---
 
@@ -27,8 +30,12 @@ Currently there is a single script that runs all the processing steps, this is *
 3. Extract the mutual looks from the data
 4. Extract all the handling and looking events that overlap with a naming event, and return a detailed list and a count of each type of overlap for each naming event
 
-To run this script, ensure that all the raw data (.txt files) is placed in the *data/raw_data* directory. Then open and run the PCI_analysis.R script.
+To run this script, ensure that all the raw data (.txt files) is placed in the *data/raw_data* directory on your host machine (this will automatically be shared with the docker container). Then open and run the PCI_analysis.R script.
 
+### Starting and stopping the container  
+- If you have finished analysis for now, but would like to use the container again later without re-running the installation steps above then use the command `docker compose stop`. This will stop the container but preserve the installation state (but possibly not workspace variables).  
+- You can go back to the container by running the command `docker compose start`.
+- If you are finished with the container and want to delete it, you can use the command `docker compose down`
 
 ### User specified variables
 
